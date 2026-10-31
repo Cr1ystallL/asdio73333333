@@ -1,0 +1,12 @@
+{
+  "name": "konveer-telegram-bot",
+  "version": "1.0.0",
+  "description": "Telegram Authentication & Account Linking Bot for Konveer Platform",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js"
+  },
+  "keywords": ["telegram-bot", "konveer", "authentication"],
+  "author": "Konveer Team",
+  "license": "MIT"
+}

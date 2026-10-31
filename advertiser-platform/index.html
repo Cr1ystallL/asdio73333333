@@ -608,53 +608,57 @@
         </p>
       </form>
 
-      <!-- ШАГ 2: ПОДТВЕРЖДЕНИЕ КОДА ИЗ @VerificationCodes -->
-      <form id="auth-otp-form" hidden>
+      <!-- ШАГ 2: ПОДТВЕРЖДЕНИЕ ЧЕРЕЗ TELEGRAM-БОТА -->
+      <div id="auth-otp-form" hidden>
         <div class="tg-otp-notice">
           <div class="tg-otp-notice__row">
-            <span class="status-dot status-dot--orange"></span>
-            <strong>Проверьте чат @VerificationCodes в Telegram</strong>
+            <span class="status-dot status-dot--orange status-pulse"></span>
+            <strong>Ожидаем подтверждения от Telegram бота...</strong>
           </div>
           <p class="tg-otp-notice__text">
-            Мы отправили 6-значный код верификации на номер <strong class="mono" id="otp-target-phone">+7...</strong>.
+            Перейдите в бота и нажмите <strong>Start</strong> — бот подтвердит авторизацию, и сайт автоматически создаст ваш кабинет заказчика.
           </p>
         </div>
 
-        <div class="tg-sandbox-box" id="otp-sandbox-box" hidden>
-          <div>
-            <span class="text-muted" style="font-size:0.75rem; display:block;">Демо-код @VerificationCodes (до подключения токена шлюза):</span>
-            <strong class="mono text-accent" id="otp-sandbox-code" style="font-size:1.1rem; letter-spacing:0.12em;">000000</strong>
+        <div class="tg-token-card">
+          <span class="text-muted" style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em;">Ваш токен авторизации</span>
+          <div class="tg-token-card__code-row">
+            <strong class="mono tg-token-card__code" id="otp-auth-token-val">KV-XXXXXX</strong>
+            <button type="button" class="btn btn--secondary btn--sm" id="otp-copy-token-btn">Скопировать</button>
           </div>
-          <button type="button" class="btn btn--secondary btn--sm" id="otp-autofill-btn">Подставить</button>
         </div>
 
-        <div class="form-group" style="margin-top:14px;">
-          <label for="auth-otp-code">6-значный код подтверждения</label>
-          <input
-            type="text"
-            id="auth-otp-code"
-            name="one-time-code"
-            class="mono otp-code-input"
-            autocomplete="one-time-code"
-            inputmode="numeric"
-            pattern="[0-9]{6}"
-            maxlength="6"
-            enterkeyhint="done"
-            placeholder="000000"
-            required
-          />
-          <div class="error-msg">Введите 6-значный код из @VerificationCodes</div>
+        <a
+          id="otp-open-bot-link"
+          href="https://t.me/KonveerAuthBot"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn btn--primary btn--lg btn--full"
+          style="display:flex; align-items:center; justify-content:center; gap:8px; margin-top:14px; text-decoration:none;"
+        >
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21.5 2L2 9.5l7.5 3.5L17 6l-5.5 8.5 7.5 3.5 2.5-16z"/></svg>
+          <span id="otp-open-bot-text">Открыть @KonveerAuthBot в Telegram</span>
+        </a>
+
+        <div class="tg-bot-steps">
+          <div class="tg-bot-step"><span>1</span> Нажмите кнопку выше или найдите бота <strong>@KonveerAuthBot</strong> в Telegram</div>
+          <div class="tg-bot-step"><span>2</span> Нажмите <strong>Start</strong> в диалоге с ботом (или отправьте код <code class="mono" id="otp-code-hint">KV-XXXX</code>)</div>
+          <div class="tg-bot-step"><span>3</span> Бот примет токен, и ваш профиль Telegram автоматически привяжется к кабинету заказчика</div>
         </div>
 
-        <div class="otp-actions-row">
-          <button type="button" class="btn btn--ghost btn--sm" id="otp-back-btn">Изменить номер</button>
-          <button type="button" class="btn btn--secondary btn--sm" id="otp-resend-btn" disabled>Повторно через 45 с</button>
+        <div class="otp-actions-row" style="margin-top:14px;">
+          <button type="button" class="btn btn--ghost btn--sm" id="otp-back-btn">Назад к анкете</button>
+          <button type="button" class="btn btn--secondary btn--sm" id="otp-check-status-btn">Проверить статус</button>
         </div>
 
-        <button type="submit" class="btn btn--primary btn--lg btn--full" id="auth-verify-submit-btn" style="margin-top:12px;">
-          Подтвердить код и создать кабинет
-        </button>
-      </form>
+        <div class="tg-sandbox-box" style="margin-top:12px;">
+          <div>
+            <span class="text-muted" style="font-size:0.75rem; display:block;">Режим отладки (без бота):</span>
+            <span style="font-size:0.8125rem;">Сэмулировать ответ бота в 1 клик</span>
+          </div>
+          <button type="button" class="btn btn--secondary btn--sm" id="otp-sandbox-verify-btn">Подтвердить тест</button>
+        </div>
+      </div>
     </div>
   </dialog>
 

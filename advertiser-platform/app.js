@@ -227,88 +227,89 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // =========================================================================
-  // 2-STEP REGISTRATION VIA TELEGRAM @VerificationCodes
+  // =========================================================================
+  // 2-STEP REGISTRATION VIA TELEGRAM AUTH BOT
   // =========================================================================
   let pendingAdvAuth = null;
-  let otpSessionToken = '';
-  let otpRequestId = '';
-  let otpFallbackCode = '';
-  let otpTimerId = null;
+  let currentAdvToken = '';
+  let advPollInterval = null;
 
   const authFormStep1 = document.getElementById('auth-form');
   const authFormStep2 = document.getElementById('auth-otp-form');
-  const otpTargetPhoneEl = document.getElementById('otp-target-phone');
-  const otpSandboxBox = document.getElementById('otp-sandbox-box');
-  const otpSandboxCodeEl = document.getElementById('otp-sandbox-code');
-  const otpInput = document.getElementById('auth-otp-code');
-  const otpResendBtn = document.getElementById('otp-resend-btn');
+  const otpAuthTokenVal = document.getElementById('otp-auth-token-val');
+  const otpOpenBotLink = document.getElementById('otp-open-bot-link');
+  const otpCodeHint = document.getElementById('otp-code-hint');
+  const otpCopyTokenBtn = document.getElementById('otp-copy-token-btn');
   const otpBackBtn = document.getElementById('otp-back-btn');
-  const otpAutofillBtn = document.getElementById('otp-autofill-btn');
+  const otpCheckStatusBtn = document.getElementById('otp-check-status-btn');
+  const otpSandboxVerifyBtn = document.getElementById('otp-sandbox-verify-btn');
   const authSendBtn = document.getElementById('auth-send-code-btn');
 
-  function startOtpTimer(seconds = 45) {
-    if (otpTimerId) clearInterval(otpTimerId);
-    let left = seconds;
-    if (otpResendBtn) {
-      otpResendBtn.disabled = true;
-      otpResendBtn.textContent = `Повторно через ${left} с`;
+  function generateRandomToken() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let res = 'KV-';
+    for (let i = 0; i < 5; i++) {
+      res += chars.charAt(Math.floor(Math.random() * chars.length));
     }
-    otpTimerId = setInterval(() => {
-      left -= 1;
-      if (left <= 0) {
-        clearInterval(otpTimerId);
-        otpTimerId = null;
-        if (otpResendBtn) {
-          otpResendBtn.disabled = false;
-          otpResendBtn.textContent = 'Отправить код повторно';
-        }
-      } else if (otpResendBtn) {
-        otpResendBtn.textContent = `Повторно через ${left} с`;
-      }
-    }, 1000);
+    return res;
   }
 
-  async function requestTelegramVerificationCode(phone) {
-    if (authSendBtn) {
-      authSendBtn.disabled = true;
-      authSendBtn.textContent = 'Отправка в @VerificationCodes...';
-    }
-    try {
-      const resp = await fetch('/api/telegram-verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'send', phone })
-      });
-      const data = await resp.json();
-      if (!resp.ok || !data.ok) {
-        throw new Error(data.error || 'Не удалось отправить код');
+  function startAdvBotAuthPolling(token) {
+    if (advPollInterval) clearInterval(advPollInterval);
+    advPollInterval = setInterval(async () => {
+      try {
+        const resp = await fetch(`/api/telegram-auth?action=check&token=${encodeURIComponent(token)}`);
+        const data = await resp.json();
+        if (data && data.ok && data.verified) {
+          clearInterval(advPollInterval);
+          advPollInterval = null;
+          finalizeAdvAuth(data.telegram_user || null);
+        }
+      } catch (err) {
+        // Fallback for offline file:// preview
       }
-      otpSessionToken = data.session_token || '';
-      otpRequestId = data.request_id || '';
-      otpFallbackCode = data.sandbox_code || '';
-      return {
-        ok: true,
-        mode: data.mode || 'live',
-        phone: data.phone || phone,
-        sandboxCode: data.sandbox_code || ''
-      };
-    } catch (err) {
-      const localCode = String(Math.floor(100000 + Math.random() * 900000));
-      otpSessionToken = '';
-      otpRequestId = '';
-      otpFallbackCode = localCode;
-      return {
-        ok: true,
-        mode: 'sandbox',
-        phone,
-        sandboxCode: localCode
-      };
-    } finally {
-      if (authSendBtn) {
-        authSendBtn.disabled = false;
-        authSendBtn.textContent = 'Получить код в @VerificationCodes';
-      }
+    }, 2000);
+  }
+
+  function finalizeAdvAuth(tgUser) {
+    if (!pendingAdvAuth) return;
+    const usernameDisplay = tgUser?.username || `@${(pendingAdvAuth.accountName || pendingAdvAuth.companyName).toLowerCase().replace(/[^a-z0-9_]/g, '')}`;
+
+    state.advertiserProfile = {
+      accountName: pendingAdvAuth.accountName || pendingAdvAuth.companyName,
+      companyName: pendingAdvAuth.companyName,
+      legalName: pendingAdvAuth.companyName,
+      email: pendingAdvAuth.email,
+      phone: pendingAdvAuth.phone,
+      country: pendingAdvAuth.country || 'Россия',
+      city: pendingAdvAuth.city || '',
+      inn: '',
+      telegramVerified: true,
+      verifiedVia: 'Telegram Bot',
+      telegramUser: tgUser || { username: usernameDisplay, id: 777888999 },
+      telegramUsername: tgUser?.username || usernameDisplay,
+      telegramId: tgUser?.id || '',
+      ordOperator: 'ОРД VK (Авто-маркировка ЕРИР)',
+      availableBank: 0,
+      createdAt: new Date().toLocaleDateString('ru-RU')
+    };
+
+    saveState(state);
+    if (advPollInterval) {
+      clearInterval(advPollInterval);
+      advPollInterval = null;
     }
+
+    if (authFormStep2) authFormStep2.hidden = true;
+    if (authFormStep1) {
+      authFormStep1.hidden = false;
+      authFormStep1.reset();
+    }
+    pendingAdvAuth = null;
+    currentAdvToken = '';
+    authDialog?.close();
+    renderAll();
+    showToast(`Telegram ${state.advertiserProfile.telegramUsername} привязан! Кабинет «${state.advertiserProfile.companyName}» создан`);
   }
 
   authFormStep1?.addEventListener('submit', async (e) => {
@@ -325,137 +326,111 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    pendingAdvAuth = { accountName, companyName, email, phone, country, city };
-    const res = await requestTelegramVerificationCode(phone);
-    if (!res.ok) return;
+    if (authSendBtn) {
+      authSendBtn.disabled = true;
+      authSendBtn.textContent = 'Генерация токена...';
+    }
 
-    if (otpTargetPhoneEl) otpTargetPhoneEl.textContent = res.phone;
-    if (res.mode === 'sandbox' && res.sandboxCode && otpSandboxBox && otpSandboxCodeEl) {
-      otpSandboxCodeEl.textContent = res.sandboxCode;
-      otpSandboxBox.hidden = false;
-    } else if (otpSandboxBox) {
-      otpSandboxBox.hidden = true;
+    currentAdvToken = generateRandomToken();
+    pendingAdvAuth = { accountName, companyName, email, phone, country, city, token: currentAdvToken };
+
+    let botUsername = 'KonveerAuthBot';
+    let botUrl = `https://t.me/${botUsername}?start=${currentAdvToken}`;
+
+    try {
+      const resp = await fetch('/api/telegram-auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'init',
+          token: currentAdvToken,
+          role: 'advertiser',
+          name: accountName,
+          phone
+        })
+      });
+      const data = await resp.json();
+      if (data && data.ok) {
+        if (data.bot_username) botUsername = data.bot_username;
+        if (data.bot_url) botUrl = data.bot_url;
+      }
+    } catch (err) {
+      // Local fallback
+    } finally {
+      if (authSendBtn) {
+        authSendBtn.disabled = false;
+        authSendBtn.textContent = 'Create Account';
+      }
+    }
+
+    if (otpAuthTokenVal) otpAuthTokenVal.textContent = currentAdvToken;
+    if (otpCodeHint) otpCodeHint.textContent = currentAdvToken;
+    if (otpOpenBotLink) {
+      otpOpenBotLink.href = botUrl;
+      const botTextEl = document.getElementById('otp-open-bot-text');
+      if (botTextEl) botTextEl.textContent = `Открыть @${botUsername} в Telegram`;
     }
 
     authFormStep1.hidden = true;
     if (authFormStep2) {
       authFormStep2.hidden = false;
-      if (otpInput) {
-        otpInput.value = '';
-        otpInput.focus();
-      }
     }
-    startOtpTimer(45);
-    showToast(`Код подтверждения отправлен в @VerificationCodes на ${res.phone}`);
+
+    startAdvBotAuthPolling(currentAdvToken);
+    showToast(`Токен ${currentAdvToken} сгенерирован. Нажмите Start в боте`);
   });
 
-  otpAutofillBtn?.addEventListener('click', () => {
-    if (otpInput && otpFallbackCode) {
-      otpInput.value = otpFallbackCode;
-      otpInput.focus();
+  otpCopyTokenBtn?.addEventListener('click', async () => {
+    if (!currentAdvToken) return;
+    try {
+      await navigator.clipboard.writeText(currentAdvToken);
+      showToast(`Токен ${currentAdvToken} скопирован в буфер`);
+    } catch (err) {
+      showToast(`Ваш код: ${currentAdvToken}`);
     }
   });
 
   otpBackBtn?.addEventListener('click', () => {
-    if (otpTimerId) clearInterval(otpTimerId);
+    if (advPollInterval) {
+      clearInterval(advPollInterval);
+      advPollInterval = null;
+    }
     if (authFormStep2) authFormStep2.hidden = true;
     if (authFormStep1) authFormStep1.hidden = false;
   });
 
-  otpResendBtn?.addEventListener('click', async () => {
-    if (!pendingAdvAuth) return;
-    const res = await requestTelegramVerificationCode(pendingAdvAuth.phone);
-    if (res.ok) {
-      if (res.mode === 'sandbox' && res.sandboxCode && otpSandboxBox && otpSandboxCodeEl) {
-        otpSandboxCodeEl.textContent = res.sandboxCode;
-        otpSandboxBox.hidden = false;
+  otpCheckStatusBtn?.addEventListener('click', async () => {
+    if (!currentAdvToken) return;
+    try {
+      const resp = await fetch(`/api/telegram-auth?action=check&token=${encodeURIComponent(currentAdvToken)}`);
+      const data = await resp.json();
+      if (data && data.ok && data.verified) {
+        finalizeAdvAuth(data.telegram_user || null);
+      } else {
+        showToast('Ожидаем команду /start в боте Telegram...');
       }
-      startOtpTimer(45);
-      showToast('Новый код отправлен в @VerificationCodes');
+    } catch (err) {
+      showToast('Ожидаем команду /start в боте Telegram...');
     }
   });
 
-  authFormStep2?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    if (!pendingAdvAuth) return;
-    const enteredCode = (otpInput?.value || '').trim();
-    if (!/^\d{6}$/.test(enteredCode)) {
-      showToast('Введите 6-значный код из @VerificationCodes');
-      return;
-    }
-
-    const verifyBtn = document.getElementById('auth-verify-submit-btn');
-    if (verifyBtn) {
-      verifyBtn.disabled = true;
-      verifyBtn.textContent = 'Проверка кода...';
-    }
-
-    let isVerified = false;
+  otpSandboxVerifyBtn?.addEventListener('click', async () => {
+    if (!currentAdvToken) currentAdvToken = generateRandomToken();
     try {
-      if (otpSessionToken || otpRequestId) {
-        const resp = await fetch('/api/telegram-verify', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'check',
-            code: enteredCode,
-            session_token: otpSessionToken,
-            request_id: otpRequestId
-          })
-        });
-        const data = await resp.json();
-        if (resp.ok && data.ok && data.verified) {
-          isVerified = true;
-        } else {
-          showToast(data.error || 'Неверный код подтверждения @VerificationCodes');
-        }
-      } else if (otpFallbackCode && enteredCode === otpFallbackCode) {
-        isVerified = true;
-      } else {
-        showToast('Неверный код подтверждения @VerificationCodes');
-      }
+      const resp = await fetch('/api/telegram-auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'sandbox_verify',
+          token: currentAdvToken,
+          username: pendingAdvAuth?.accountName ? `@${pendingAdvAuth.accountName.toLowerCase()}` : '@konveer_brand'
+        })
+      });
+      const data = await resp.json();
+      finalizeAdvAuth(data.telegram_user || null);
     } catch (err) {
-      if (otpFallbackCode && enteredCode === otpFallbackCode) {
-        isVerified = true;
-      } else {
-        showToast('Ошибка проверки кода');
-      }
-    } finally {
-      if (verifyBtn) {
-        verifyBtn.disabled = false;
-        verifyBtn.textContent = 'Подтвердить код и создать кабинет';
-      }
+      finalizeAdvAuth({ username: '@konveer_brand', id: 777888999 });
     }
-
-    if (!isVerified) return;
-
-    state.advertiserProfile = {
-      accountName: pendingAdvAuth.accountName || pendingAdvAuth.companyName,
-      companyName: pendingAdvAuth.companyName,
-      legalName: pendingAdvAuth.companyName,
-      email: pendingAdvAuth.email,
-      phone: pendingAdvAuth.phone,
-      country: pendingAdvAuth.country || 'Россия',
-      city: pendingAdvAuth.city || '',
-      inn: '',
-      telegramVerified: true,
-      verifiedVia: '@VerificationCodes',
-      ordOperator: 'ОРД VK (Авто-маркировка ЕРИР)',
-      availableBank: 0,
-      createdAt: new Date().toLocaleDateString('ru-RU')
-    };
-
-    saveState(state);
-    if (otpTimerId) clearInterval(otpTimerId);
-    authFormStep2.hidden = true;
-    if (authFormStep1) {
-      authFormStep1.hidden = false;
-      authFormStep1.reset();
-    }
-    pendingAdvAuth = null;
-    authDialog?.close();
-    renderAll();
-    showToast(`Телефон подтвержден через @VerificationCodes. Кабинет «${state.advertiserProfile.companyName}» создан`);
   });
 
   // Logout button
