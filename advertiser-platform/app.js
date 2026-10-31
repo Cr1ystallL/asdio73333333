@@ -242,7 +242,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const otpCopyTokenBtn = document.getElementById('otp-copy-token-btn');
   const otpBackBtn = document.getElementById('otp-back-btn');
   const otpCheckStatusBtn = document.getElementById('otp-check-status-btn');
-  const otpSandboxVerifyBtn = document.getElementById('otp-sandbox-verify-btn');
   const authSendBtn = document.getElementById('auth-send-code-btn');
 
   function generateRandomToken() {
@@ -411,25 +410,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     } catch (err) {
       showToast('Ожидаем команду /start в боте Telegram...');
-    }
-  });
-
-  otpSandboxVerifyBtn?.addEventListener('click', async () => {
-    if (!currentAdvToken) currentAdvToken = generateRandomToken();
-    try {
-      const resp = await fetch('/api/telegram-auth', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'sandbox_verify',
-          token: currentAdvToken,
-          username: pendingAdvAuth?.accountName ? `@${pendingAdvAuth.accountName.toLowerCase()}` : '@konveer_brand'
-        })
-      });
-      const data = await resp.json();
-      finalizeAdvAuth(data.telegram_user || null);
-    } catch (err) {
-      finalizeAdvAuth({ username: '@konveer_brand', id: 777888999 });
     }
   });
 
@@ -1109,4 +1089,233 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   renderAll();
+
+  // =========================================================================
+  // ONBOARDING SPOTLIGHT TOUR
+  // =========================================================================
+  const TOUR_STORAGE_KEY = 'konveer_advertiser_tour_completed_v1';
+
+  const ADVERTISER_TOUR_STEPS = [
+    {
+      target: '.sidebar__nav',
+      title: 'Панель рекламодателя',
+      desc: 'Быстрый переход по всем ключевым процессам: общая аналитика охватов, создание заданий, модерация сданных клипов, эскроу-депозит и маркировка рекламы.',
+      onEnter: () => switchTab('dashboard')
+    },
+    {
+      target: '#open-topup-modal-top',
+      title: 'Свободный депозит (Эскроу)',
+      desc: 'Пополняйте баланс по безналичному расчету (с закрывающими актами) или банковской картой. Деньги замораживаются в защищенном пуле и списываются исключительно за подтвержденные просмотры.',
+      onEnter: () => switchTab('dashboard')
+    },
+    {
+      target: '#open-create-modal-top',
+      title: 'Создать рекламное задание',
+      desc: 'Запуск посева за 2 минуты: укажите ставку CPM (рублей за 1 000 просмотров), целевые площадки, прикрепите ссылку на облако с исходниками и выделите бюджет.',
+      onEnter: () => switchTab('campaigns')
+    },
+    {
+      target: '[data-tab="moderation"]',
+      title: 'Модерация сданных роликов',
+      desc: 'Контролируйте ролики, сданные клипперами. Платформа парсит реальные просмотры и сверяет ваш авторский токен. В случае нарушения ТЗ вы можете отклонить видео.',
+      onEnter: () => switchTab('moderation')
+    },
+    {
+      target: '[data-tab="settings"]',
+      title: 'Реквизиты и ОРД (347-ФЗ)',
+      desc: 'Укажите ИНН организации и выберите ОРД (VK, Сбер, МедиаСкаут). Платформа автоматически маркирует креативы токенами erid и отправляет обязательную отчетность в ЕРИР.',
+      onEnter: () => switchTab('settings')
+    }
+  ];
+
+  function initOnboardingTour({ steps, storageKey }) {
+    let backdrop = document.querySelector('.tour-backdrop');
+    let spotlight = document.querySelector('.tour-spotlight');
+    let card = document.querySelector('.tour-card');
+
+    if (!backdrop) {
+      backdrop = document.createElement('div');
+      backdrop.className = 'tour-backdrop';
+      document.body.appendChild(backdrop);
+    }
+    if (!spotlight) {
+      spotlight = document.createElement('div');
+      spotlight.className = 'tour-spotlight';
+      document.body.appendChild(spotlight);
+    }
+    if (!card) {
+      card = document.createElement('div');
+      card.className = 'tour-card';
+      document.body.appendChild(card);
+    }
+
+    let currentStep = 0;
+    let isRunning = false;
+
+    function updatePosition() {
+      if (!isRunning) return;
+      const step = steps[currentStep];
+      if (!step) return;
+
+      const el = typeof step.target === 'function' ? step.target() : document.querySelector(step.target);
+      if (!el) return;
+
+      const rect = el.getBoundingClientRect();
+      const pad = step.padding ?? 8;
+      const top = Math.max(0, rect.top - pad);
+      const left = Math.max(0, rect.left - pad);
+      const width = rect.width + pad * 2;
+      const height = rect.height + pad * 2;
+
+      spotlight.style.top = `${top}px`;
+      spotlight.style.left = `${left}px`;
+      spotlight.style.width = `${width}px`;
+      spotlight.style.height = `${height}px`;
+
+      const elRadius = window.getComputedStyle(el).borderRadius;
+      spotlight.style.borderRadius = elRadius && elRadius !== '0px' ? elRadius : '8px';
+
+      const W = window.innerWidth;
+      const H = window.innerHeight;
+      const x1 = Math.round(left);
+      const y1 = Math.round(top);
+      const x2 = Math.round(left + width);
+      const y2 = Math.round(top + height);
+
+      backdrop.style.clipPath = `polygon(0px 0px, 0px ${H}px, ${x1}px ${H}px, ${x1}px ${y1}px, ${x2}px ${y1}px, ${x2}px ${y2}px, ${x1}px ${y2}px, ${x1}px ${H}px, ${W}px ${H}px, ${W}px 0px)`;
+
+      const cardWidth = Math.min(390, window.innerWidth - 32);
+      card.style.width = `${cardWidth}px`;
+      const cardHeight = card.offsetHeight || 220;
+
+      let cardTop = top + height + 16;
+      if (cardTop + cardHeight > window.innerHeight - 16) {
+        if (top - cardHeight - 16 > 16) {
+          cardTop = top - cardHeight - 16;
+        } else {
+          cardTop = Math.max(16, window.innerHeight - cardHeight - 16);
+        }
+      }
+
+      let cardLeft = left;
+      if (cardLeft + cardWidth > window.innerWidth - 16) {
+        cardLeft = window.innerWidth - cardWidth - 16;
+      }
+      if (cardLeft < 16) {
+        cardLeft = 16;
+      }
+
+      card.style.top = `${cardTop}px`;
+      card.style.left = `${cardLeft}px`;
+    }
+
+    function showStep(index) {
+      if (index < 0 || index >= steps.length) {
+        endTour();
+        return;
+      }
+      currentStep = index;
+      const step = steps[currentStep];
+
+      if (step.onEnter) {
+        try {
+          step.onEnter();
+        } catch (e) {}
+      }
+
+      const total = steps.length;
+      const dotsHtml = steps.map((_, i) => `<span class="tour-card__progress-dot ${i === currentStep ? 'is-active' : ''}"></span>`).join('');
+
+      card.innerHTML = `
+        <div class="tour-card__top">
+          <span class="tour-card__step-badge">ШАГ ${currentStep + 1} ИЗ ${total}</span>
+          <button type="button" class="tour-card__close-btn" id="tour-close-btn" title="Закрыть (Esc)">&times;</button>
+        </div>
+        <h3 class="tour-card__title">${step.title}</h3>
+        <p class="tour-card__desc">${step.desc}</p>
+        <div class="tour-card__progress-bar">${dotsHtml}</div>
+        <div class="tour-card__footer">
+          <button type="button" class="btn btn--secondary btn--sm" id="tour-skip-btn">Пропустить</button>
+          <div class="tour-card__nav">
+            <button type="button" class="btn btn--secondary btn--sm" id="tour-prev-btn" ${currentStep === 0 ? 'disabled style="opacity:0.4; pointer-events:none;"' : ''}>Назад</button>
+            <button type="button" class="btn btn--primary btn--sm" id="tour-next-btn">${currentStep === total - 1 ? 'Завершить' : 'Далее'}</button>
+          </div>
+        </div>
+      `;
+
+      card.querySelector('#tour-close-btn')?.addEventListener('click', endTour);
+      card.querySelector('#tour-skip-btn')?.addEventListener('click', endTour);
+      card.querySelector('#tour-prev-btn')?.addEventListener('click', () => showStep(currentStep - 1));
+      card.querySelector('#tour-next-btn')?.addEventListener('click', () => showStep(currentStep + 1));
+
+      const el = typeof step.target === 'function' ? step.target() : document.querySelector(step.target);
+      if (el) {
+        try {
+          el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+        } catch (e) {}
+      }
+
+      requestAnimationFrame(() => {
+        setTimeout(updatePosition, 50);
+      });
+    }
+
+    function startTour() {
+      isRunning = true;
+      backdrop.classList.add('is-active');
+      spotlight.classList.add('is-active');
+      card.classList.add('is-active');
+      showStep(0);
+
+      window.addEventListener('resize', updatePosition);
+      window.addEventListener('scroll', updatePosition, true);
+      document.addEventListener('keydown', handleKeyDown);
+    }
+
+    function endTour() {
+      isRunning = false;
+      backdrop.classList.remove('is-active');
+      spotlight.classList.remove('is-active');
+      card.classList.remove('is-active');
+      backdrop.style.clipPath = '';
+      window.removeEventListener('resize', updatePosition);
+      window.removeEventListener('scroll', updatePosition, true);
+      document.removeEventListener('keydown', handleKeyDown);
+
+      try {
+        localStorage.setItem(storageKey, 'true');
+      } catch (e) {}
+    }
+
+    function handleKeyDown(e) {
+      if (!isRunning) return;
+      if (e.key === 'Escape') {
+        endTour();
+      } else if (e.key === 'ArrowRight' || e.key === 'Enter') {
+        showStep(currentStep + 1);
+      } else if (e.key === 'ArrowLeft') {
+        if (currentStep > 0) showStep(currentStep - 1);
+      }
+    }
+
+    document.getElementById('start-tour-btn')?.addEventListener('click', () => {
+      startTour();
+    });
+
+    try {
+      const hasSeen = localStorage.getItem(storageKey);
+      if (!hasSeen) {
+        setTimeout(() => {
+          startTour();
+        }, 700);
+      }
+    } catch (e) {}
+
+    return { start: startTour, end: endTour };
+  }
+
+  initOnboardingTour({
+    steps: ADVERTISER_TOUR_STEPS,
+    storageKey: TOUR_STORAGE_KEY
+  });
 });

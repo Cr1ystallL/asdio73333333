@@ -94,7 +94,7 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ ok: false, error: 'Неизвестное действие' });
   }
 
-  // 2. POST Requests: init, verify_by_bot, sandbox_verify
+  // 2. POST Requests: init, verify_by_bot
   if (req.method === 'POST') {
     const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
     const action = body.action || 'init';
@@ -168,34 +168,6 @@ module.exports = async function handler(req, res) {
         token,
         telegram_user: tgUser,
         message: 'Telegram успешно привязан к аккаунту'
-      });
-    }
-
-    // C) SANDBOX_VERIFY: Instant browser verification simulation for testing
-    if (action === 'sandbox_verify') {
-      const token = sanitizeToken(body.token || 'KV-DEMO');
-      const mockTgUser = {
-        id: Math.floor(100000000 + Math.random() * 900000000),
-        username: body.username || 'konveer_user',
-        first_name: body.first_name || 'Пользователь Konveer',
-        verified_via: 'Telegram Bot (Sandbox)'
-      };
-
-      const session = {
-        token,
-        status: 'verified',
-        telegramUser: mockTgUser,
-        verifiedAt: Date.now(),
-        expiresAt: Date.now() + 15 * 60 * 1000
-      };
-      globalSessions.set(token, session);
-
-      return res.status(200).json({
-        ok: true,
-        verified: true,
-        token,
-        telegram_user: mockTgUser,
-        message: 'Тестовая привязка Telegram выполнена успешно'
       });
     }
 
