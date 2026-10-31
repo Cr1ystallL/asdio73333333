@@ -566,6 +566,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     saveState(state);
+
+    // Sync to shared central database for clippers
+    fetch('/api/campaigns', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newCamp)
+    }).catch((err) => console.warn('Sync campaign error:', err));
+
     createDialog.close();
     e.target.reset();
     renderAll();
@@ -669,6 +677,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     saveState(state);
+
+    // Sync moderation decision to central database
+    fetch('/api/submissions', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ submissionId: sub.id, status: sub.status })
+    }).catch(() => {});
+
     renderAll();
   }
 
@@ -1089,6 +1105,74 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   renderAll();
+
+  // =========================================================================
+  // CENTRAL SERVER SYNC (Cross-platform sync between Advertiser & Clipper)
+  // =========================================================================
+  async function syncCampaignsFromServer() {
+    try {
+      const res = await fetch('/api/campaigns');
+      if (res.ok) {
+        const data = await res.json();
+        if (data && Array.isArray(data.campaigns)) {
+          const localMap = new Map(state.campaigns.map(c => [c.id, c]));
+          let changed = false;
+          for (const serverCamp of data.campaigns) {
+            if (!localMap.has(serverCamp.id)) {
+              state.campaigns.push(serverCamp);
+              changed = true;
+            } else {
+              const local = localMap.get(serverCamp.id);
+              if (local.remainingBudget !== serverCamp.remainingBudget || local.status !== serverCamp.status || local.takenByClipper !== serverCamp.takenByClipper) {
+                Object.assign(local, serverCamp);
+                changed = true;
+              }
+            }
+          }
+          if (changed) {
+            saveState(state);
+            renderAll();
+          }
+        }
+      }
+    } catch (e) {}
+  }
+
+  async function syncSubmissionsFromServer() {
+    try {
+      const res = await fetch('/api/submissions');
+      if (res.ok) {
+        const data = await res.json();
+        if (data && Array.isArray(data.submissions)) {
+          const localMap = new Map(state.submissions.map(s => [s.id, s]));
+          let changed = false;
+          for (const sub of data.submissions) {
+            if (!localMap.has(sub.id)) {
+              state.submissions.unshift(sub);
+              changed = true;
+            } else {
+              const local = localMap.get(sub.id);
+              if (local.status !== sub.status || local.views !== sub.views) {
+                Object.assign(local, sub);
+                changed = true;
+              }
+            }
+          }
+          if (changed) {
+            saveState(state);
+            renderAll();
+          }
+        }
+      }
+    } catch (e) {}
+  }
+
+  syncCampaignsFromServer();
+  syncSubmissionsFromServer();
+  setInterval(() => {
+    syncCampaignsFromServer();
+    syncSubmissionsFromServer();
+  }, 7000);
 
   // =========================================================================
   // ONBOARDING SPOTLIGHT TOUR

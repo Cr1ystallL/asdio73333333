@@ -619,13 +619,10 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="empty-state__icon" aria-hidden="true">
             <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg>
           </div>
-          <h3 class="panel__title">В каталоге пока нет опубликованных заданий</h3>
+          <h3 class="panel__title">В каталоге пока нет доступных заданий</h3>
           <p class="panel__subtitle" style="max-width:460px;">
-            Задания появляются здесь сразу после того, как рекламодатель создаст кампанию в кабинете заказчика
+            Новые рекламные кампании от брендов публикуются автоматически. Загляните чуть позже или обновите страницу
           </p>
-          <a href="../advertiser-platform/index.html" class="btn btn--secondary btn--sm" style="margin-top:6px;">
-            <span>Открыть кабинет заказчика и создать задание</span>
-          </a>
         </div>
       `;
       return;
@@ -1089,6 +1086,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     state.submissions.unshift(newSub);
     saveState(state);
+
+    // Sync submitted clip to central database for advertiser moderation
+    fetch('/api/submissions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newSub)
+    }).catch(() => {});
+
     submitClipDialog.close();
     e.target.reset();
     switchTab('my-clips');
@@ -1332,11 +1337,8 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="empty-state" style="padding:28px 16px;">
             <h4 class="panel__title">Активных офферов пока нет</h4>
             <p class="panel__subtitle" style="max-width:380px;">
-              Как только заказчик опубликует задание в рекламном кабинете, оно сразу отобразится здесь и в каталоге
+              Новые кампании с высокими ставками CPM появятся здесь, как только бренды запустят посев
             </p>
-            <a href="../advertiser-platform/index.html" class="btn btn--secondary btn--sm" style="margin-top:6px;">
-              Открыть кабинет заказчика
-            </a>
           </div>
         `;
       } else {
@@ -1399,6 +1401,76 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   renderAll();
+
+  // =========================================================================
+  // CENTRAL SERVER SYNC (Cross-platform sync between Advertiser & Clipper)
+  // =========================================================================
+  async function syncCampaignsFromServer() {
+    try {
+      const res = await fetch('/api/campaigns');
+      if (res.ok) {
+        const data = await res.json();
+        if (data && Array.isArray(data.campaigns)) {
+          const localMap = new Map(state.campaigns.map(c => [c.id, c]));
+          let changed = false;
+          for (const serverCamp of data.campaigns) {
+            if (!localMap.has(serverCamp.id)) {
+              state.campaigns.unshift(serverCamp);
+              changed = true;
+            } else {
+              const local = localMap.get(serverCamp.id);
+              if (local.remainingBudget !== serverCamp.remainingBudget || local.status !== serverCamp.status) {
+                const taken = local.takenByClipper || serverCamp.takenByClipper;
+                Object.assign(local, serverCamp);
+                local.takenByClipper = taken;
+                changed = true;
+              }
+            }
+          }
+          if (changed || state.campaigns.length !== data.campaigns.length) {
+            saveState(state);
+            renderAll();
+          }
+        }
+      }
+    } catch (e) {}
+  }
+
+  async function syncSubmissionsFromServer() {
+    try {
+      const res = await fetch('/api/submissions');
+      if (res.ok) {
+        const data = await res.json();
+        if (data && Array.isArray(data.submissions)) {
+          const localMap = new Map(state.submissions.map(s => [s.id, s]));
+          let changed = false;
+          for (const sub of data.submissions) {
+            if (!localMap.has(sub.id)) {
+              state.submissions.unshift(sub);
+              changed = true;
+            } else {
+              const local = localMap.get(sub.id);
+              if (local.status !== sub.status || local.views !== sub.views) {
+                Object.assign(local, sub);
+                changed = true;
+              }
+            }
+          }
+          if (changed) {
+            saveState(state);
+            renderAll();
+          }
+        }
+      }
+    } catch (e) {}
+  }
+
+  syncCampaignsFromServer();
+  syncSubmissionsFromServer();
+  setInterval(() => {
+    syncCampaignsFromServer();
+    syncSubmissionsFromServer();
+  }, 7000);
 
   // =========================================================================
   // ONBOARDING SPOTLIGHT TOUR
