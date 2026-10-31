@@ -481,34 +481,50 @@
         <span class="mono text-muted" style="font-size:0.75rem;">@VerificationCodes</span>
       </div>
 
-      <h2 id="auth-dialog-title" class="modal-dialog__title">Регистрация заказчика</h2>
-      <p class="modal-dialog__subtitle">Заполните анкету рекламодателя — на ваш номер придет проверочный код в чат @VerificationCodes в Telegram</p>
+      <h2 id="auth-dialog-title" class="modal-dialog__title">Company Details</h2>
+      <p class="modal-dialog__subtitle">Заполните данные заказчика — проверочный код поступит на ваш номер в чат @VerificationCodes в Telegram</p>
 
       <form id="auth-form">
         <div class="form-group">
-          <label for="auth-company">Название бренда, канала или агентства</label>
-          <span id="auth-company-hint" class="field-hint">Отображается клипперам в карточке ваших заданий</span>
+          <label for="auth-account-name">Account name</label>
+          <span id="auth-account-name-hint" class="field-hint">Имя учетной записи представителя бренда</span>
+          <input
+            type="text"
+            id="auth-account-name"
+            name="username"
+            autocomplete="username"
+            enterkeyhint="next"
+            placeholder="Например: alex_marketing или konveer_client"
+            aria-describedby="auth-account-name-hint"
+            required
+          />
+          <div class="error-msg">Укажите имя аккаунта</div>
+        </div>
+
+        <div class="form-group">
+          <label for="auth-company">Company full name</label>
+          <span id="auth-company-hint" class="field-hint">Отображается клипперам в карточках ваших заданий</span>
           <input
             type="text"
             id="auth-company"
             name="organization"
             autocomplete="organization"
             enterkeyhint="next"
-            placeholder="Например: Stream Team или Бренд одежды"
+            placeholder="Например: ООО Медиа Продакшн или Stream Team"
             aria-describedby="auth-company-hint"
             required
           />
-          <div class="error-msg">Укажите название бренда или канала</div>
+          <div class="error-msg">Укажите название компании или бренда</div>
         </div>
 
         <div class="form-group">
-          <label for="auth-email">Рабочая электронная почта</label>
-          <span id="auth-email-hint" class="field-hint">Формат: name@company.ru</span>
+          <label for="auth-email">E-mail</label>
+          <span id="auth-email-hint" class="field-hint">Корпоративный или личный адрес электронной почты</span>
           <input
             type="email"
             id="auth-email"
             name="email"
-            autocomplete="username"
+            autocomplete="email"
             spellcheck="false"
             autocorrect="off"
             autocapitalize="off"
@@ -517,33 +533,50 @@
             aria-describedby="auth-email-hint"
             required
           />
-          <div class="error-msg">Введите корректный адрес электронной почты</div>
+          <div class="error-msg">Введите корректный e-mail</div>
+        </div>
+
+        <div class="form-group">
+          <label for="auth-phone">Phone number</label>
+          <span id="auth-phone-hint" class="field-hint">Номер телефона, привязанный к Telegram (@VerificationCodes)</span>
+          <input
+            type="tel"
+            id="auth-phone"
+            name="tel"
+            autocomplete="tel"
+            enterkeyhint="next"
+            placeholder="+7 (999) 000-00-00"
+            aria-describedby="auth-phone-hint"
+            required
+          />
+          <div class="error-msg">Укажите телефон для получения кода</div>
         </div>
 
         <div class="form-row-2">
           <div class="form-group">
-            <label for="auth-phone">Телефон в Telegram</label>
+            <label for="auth-country">Country</label>
             <input
-              type="tel"
-              id="auth-phone"
-              name="tel"
-              autocomplete="tel"
+              type="text"
+              id="auth-country"
+              name="country-name"
+              autocomplete="country-name"
               enterkeyhint="next"
-              placeholder="+7 (999) 000-00-00"
+              placeholder="Россия"
+              value="Россия"
               required
             />
-            <div class="error-msg">Укажите телефон для кода @VerificationCodes</div>
           </div>
 
           <div class="form-group">
-            <label for="auth-inn">ИНН юрлица / ИП</label>
+            <label for="auth-city">City</label>
             <input
               type="text"
-              id="auth-inn"
-              class="mono"
-              inputmode="numeric"
+              id="auth-city"
+              name="address-level2"
+              autocomplete="address-level2"
               enterkeyhint="next"
-              placeholder="Необязательно"
+              placeholder="Москва"
+              required
             />
           </div>
         </div>
@@ -567,8 +600,12 @@
         </div>
 
         <button type="submit" class="btn btn--primary btn--lg btn--full" id="auth-send-code-btn">
-          Получить код в @VerificationCodes
+          Create Account
         </button>
+
+        <p class="text-muted text-center" style="font-size:0.75rem; margin-top:12px; margin-bottom:0;">
+          By creating an account, you agree with <a href="#" style="color:var(--accent); text-decoration:underline;">Terms and Conditions</a>
+        </p>
       </form>
 
       <!-- ШАГ 2: ПОДТВЕРЖДЕНИЕ КОДА ИЗ @VerificationCodes -->

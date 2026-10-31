@@ -313,17 +313,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
   authFormStep1?.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const companyName = document.getElementById('auth-company').value.trim();
-    const email = document.getElementById('auth-email').value.trim();
-    const phone = document.getElementById('auth-phone').value.trim();
-    const inn = document.getElementById('auth-inn').value.trim();
+    const accountName = document.getElementById('auth-account-name')?.value.trim() || '';
+    const companyName = document.getElementById('auth-company')?.value.trim() || '';
+    const email = document.getElementById('auth-email')?.value.trim() || '';
+    const phone = document.getElementById('auth-phone')?.value.trim() || '';
+    const country = document.getElementById('auth-country')?.value.trim() || 'Россия';
+    const city = document.getElementById('auth-city')?.value.trim() || '';
     const digits = phone.replace(/\D/g, '');
-    if (!companyName || !email || digits.length < 10) {
-      showToast('Укажите название компании, почту и номер телефона (+7...)');
+    if (!accountName || !companyName || !email || digits.length < 10) {
+      showToast('Заполните Account name, название компании, почту и номер телефона');
       return;
     }
 
-    pendingAdvAuth = { companyName, email, phone, inn };
+    pendingAdvAuth = { accountName, companyName, email, phone, country, city };
     const res = await requestTelegramVerificationCode(phone);
     if (!res.ok) return;
 
@@ -428,11 +430,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!isVerified) return;
 
     state.advertiserProfile = {
+      accountName: pendingAdvAuth.accountName || pendingAdvAuth.companyName,
       companyName: pendingAdvAuth.companyName,
       legalName: pendingAdvAuth.companyName,
       email: pendingAdvAuth.email,
       phone: pendingAdvAuth.phone,
-      inn: pendingAdvAuth.inn || '',
+      country: pendingAdvAuth.country || 'Россия',
+      city: pendingAdvAuth.city || '',
+      inn: '',
       telegramVerified: true,
       verifiedVia: '@VerificationCodes',
       ordOperator: 'ОРД VK (Авто-маркировка ЕРИР)',
