@@ -1,0 +1,240 @@
+{
+  "main": {
+    "id": "5f49ca21a5534aa3",
+    "type": "split",
+    "children": [
+      {
+        "id": "120cd0d09000775a",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "5b334b16125d2e38",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "07 - LEGAL/Legal Structure & Regulatory Compliance (RU).md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Legal Structure & Regulatory Compliance (RU)"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "2a752a7a301de76c",
+    "type": "split",
+    "children": [
+      {
+        "id": "5e4cf9ab431f9b89",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "44dd6cbf6da8541e",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Файловый менеджер"
+            }
+          },
+          {
+            "id": "0d0f3b58785b18d7",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Поиск"
+            }
+          },
+          {
+            "id": "982195e1ab84601a",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-bookmark",
+              "title": "Закладки"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "aa67de5f28aa66c0",
+    "type": "split",
+    "children": [
+      {
+        "id": "f3ca9ccb85f07973",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "b272455e7865511c",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "07 - LEGAL/Legal Structure & Regulatory Compliance (RU).md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Обратные ссылки"
+            }
+          },
+          {
+            "id": "526587586249c492",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "07 - LEGAL/Legal Structure & Regulatory Compliance (RU).md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Исходящие ссылки"
+            }
+          },
+          {
+            "id": "f78b87bfddde832a",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Теги"
+            }
+          },
+          {
+            "id": "56cc03cec333245f",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "Все свойства"
+            }
+          },
+          {
+            "id": "120e14fbb5293821",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "07 - LEGAL/Legal Structure & Regulatory Compliance (RU).md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Структура"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Меню быстрого перехода": false,
+      "graph:Граф": false,
+      "canvas:Создать новый холст": false,
+      "daily-notes:Сегодняшняя заметка": false,
+      "templates:Вставить шаблон": false,
+      "command-palette:Открыть палитру команд": false,
+      "bases:Создать новую базу": false
+    }
+  },
+  "active": "44dd6cbf6da8541e",
+  "lastOpenFiles": [
+    "landing/script.js",
+    "landing/styles.css",
+    "landing/assets/avatars/a5.png",
+    "landing/assets/avatars/a4.png",
+    "landing/assets/avatars/a3.png",
+    "landing/assets/avatars/a2.png",
+    "landing/assets/avatars/a1.png",
+    "landing/index.html",
+    "landing/assets/coin.png",
+    "landing/assets/coin_raw.png",
+    "landing/assets/k.png",
+    "landing/assets/logo.png",
+    "landing/assets/video.png",
+    "landing/assets/avatars",
+    "landing/assets",
+    "landing",
+    "mediaref",
+    "Новая папка",
+    "fix_dashes.js",
+    "04 - FINANCE/Financial Edge Cases.md",
+    "09 - MARKETING/Growth Loops.md",
+    "09 - MARKETING/Retention Strategy.md",
+    "09 - MARKETING/Community Strategy.md",
+    "09 - MARKETING/Brand Identity.md",
+    "09 - MARKETING/Naming.md",
+    "03 - UX UI DESIGN/Design System.md",
+    "03 - UX UI DESIGN/Design Philosophy.md",
+    "02 - PRODUCT/Product Constraints.md",
+    "02 - PRODUCT/Business Rules.md",
+    "02 - PRODUCT/System States.md",
+    "02 - PRODUCT/Access Permissions.md",
+    "02 - PRODUCT/User Roles.md",
+    "02 - PRODUCT/Customer Journey.md",
+    "02 - PRODUCT/User Journey.md",
+    "02 - PRODUCT/User Stories.md",
+    "02 - PRODUCT/User Scenarios.md",
+    "02 - PRODUCT/Non-Functional Requirements.md",
+    "02 - PRODUCT/Functional Requirements.md",
+    "02 - PRODUCT/Product Strategy.md",
+    "02 - PRODUCT/Product Vision.md",
+    "08 - ARCHITECTURE/Deployment Architecture.md",
+    "08 - ARCHITECTURE/Security Architecture.md",
+    "08 - ARCHITECTURE/Scalability.md",
+    "08 - ARCHITECTURE/Monitoring & Alerting.md",
+    "mediareferens",
+    "check_links.js"
+  ]
+}

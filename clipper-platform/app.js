@@ -11,28 +11,60 @@ const DEFAULT_STATE = {
 };
 
 function loadState() {
+  let local = null;
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_STATE));
-      return structuredClone(DEFAULT_STATE);
+    if (raw) local = JSON.parse(raw);
+  } catch (e) {}
+
+  let synced = null;
+  try {
+    if (window.name && window.name.includes('"__konveer_sync":true')) {
+      const parsedName = JSON.parse(window.name);
+      if (parsedName && parsedName.__konveer_sync && parsedName.state) {
+        synced = parsedName.state;
+      }
     }
-    const parsed = JSON.parse(raw);
-    return {
-      advertiserProfile: parsed.advertiserProfile || null,
-      clipperProfile: parsed.clipperProfile || null,
-      campaigns: Array.isArray(parsed.campaigns) ? parsed.campaigns : [],
-      submissions: Array.isArray(parsed.submissions) ? parsed.submissions : [],
-      clipperLedger: Array.isArray(parsed.clipperLedger) ? parsed.clipperLedger : [],
-      advertiserLedger: Array.isArray(parsed.advertiserLedger) ? parsed.advertiserLedger : []
+  } catch (e) {}
+
+  let source = local;
+  if (synced && (!local || (synced.updatedAt || 0) >= (local.updatedAt || 0))) {
+    source = {
+      ...synced,
+      clipperProfile: synced.clipperProfile || local?.clipperProfile || null,
+      advertiserProfile: synced.advertiserProfile || local?.advertiserProfile || null
     };
-  } catch (e) {
-    return structuredClone(DEFAULT_STATE);
   }
+
+  if (!source) {
+    const clean = structuredClone(DEFAULT_STATE);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(clean));
+    return clean;
+  }
+
+  const normalized = {
+    updatedAt: source.updatedAt || Date.now(),
+    advertiserProfile: source.advertiserProfile || null,
+    clipperProfile: source.clipperProfile || null,
+    campaigns: Array.isArray(source.campaigns) ? source.campaigns : [],
+    submissions: Array.isArray(source.submissions) ? source.submissions : [],
+    clipperLedger: Array.isArray(source.clipperLedger) ? source.clipperLedger : [],
+    advertiserLedger: Array.isArray(source.advertiserLedger) ? source.advertiserLedger : []
+  };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized));
+  try {
+    window.name = JSON.stringify({ __konveer_sync: true, state: normalized });
+  } catch (e) {}
+  return normalized;
 }
 
 function saveState(state) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  state.updatedAt = Date.now();
+  const str = JSON.stringify(state);
+  localStorage.setItem(STORAGE_KEY, str);
+  try {
+    window.name = JSON.stringify({ __konveer_sync: true, state });
+  } catch (e) {}
 }
 
 function formatMoney(num) {
