@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Konveer Business — Кабинет заказчика</title>
+  <meta name="description" content="Платформа для заказчиков Konveer: создание заданий для клипперов, пополнение эскроу-банка, модерация роликов и аналитика просмотров" />
+  <meta name="theme-color" content="#141415" />
+  <link rel="icon" type="image/png" href="assets/k.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <!-- ============ SIDEBAR NAVIGATION (260px) ============ -->
+    <aside class="sidebar" id="sidebar">
+      <a href="../landing/index.html" class="sidebar__account" title="На главную страницу Konveer">
+        <div class="sidebar__account-left">
+          <div class="sidebar__logo-mark">
+            <img src="assets/k.png" alt="Konveer" width="15" height="15" />
+          </div>
+          <div class="sidebar__account-meta">
+            <span class="sidebar__account-name">Konveer Business</span>
+            <span class="sidebar__account-role">Кабинет заказчика</span>
+          </div>
+        </div>
+        <svg class="sidebar__account-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/>
+        </svg>
+      </a>
+
+      <!-- Search with ⌘ K keycaps -->
+      <div class="sidebar__search">
+        <svg class="sidebar__search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+        </svg>
+        <input type="search" id="sidebar-quick-search" class="sidebar__search-input" placeholder="Поиск" enterkeyhint="search" aria-label="Поиск по кампаниям" />
+        <div class="keycaps" aria-hidden="true">
+          <span class="keycap">⌘</span>
+          <span class="keycap">K</span>
+        </div>
+      </div>
+
+      <!-- Primary Nav Group -->
+      <nav class="sidebar__nav" aria-label="Навигация кабинета заказчика">
+        <button type="button" class="sidebar__link is-active" data-tab="dashboard">
+          <span class="sidebar__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </span>
+          <span>Сводка и охват</span>
+        </button>
+
+        <button type="button" class="sidebar__link" data-tab="campaigns">
+          <span class="sidebar__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg>
+          </span>
+          <span>Мои задания</span>
+          <span class="sidebar__count" id="nav-camp-count">0</span>
+        </button>
+
+        <button type="button" class="sidebar__link" data-tab="moderation">
+          <span class="sidebar__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          </span>
+          <span>Модерация клипов</span>
+          <span class="sidebar__count" id="nav-mod-count">0</span>
+        </button>
+
+        <button type="button" class="sidebar__link" data-tab="bank">
+          <span class="sidebar__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+          </span>
+          <span>Эскроу-банк и УПД</span>
+        </button>
+
+        <button type="button" class="sidebar__link" data-tab="clippers">
+          <span class="sidebar__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </span>
+          <span>Реестр авторов</span>
+        </button>
+
+        <button type="button" class="sidebar__link" data-tab="settings">
+          <span class="sidebar__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          </span>
+          <span>Реквизиты и ОРД</span>
+        </button>
+      </nav>
+
+      <!-- Active Pools List dynamically rendered from real campaigns -->
+      <div class="sidebar__section-label">
+        <span>Активные пулы</span>
+      </div>
+      <div class="sidebar__dot-list" id="sidebar-pools-list">
+        <div class="text-muted" style="font-size:0.75rem; padding:4px 10px;">Пулов пока нет</div>
+      </div>
+
+      <!-- Escrow Balance Widget -->
+      <div class="sidebar__escrow-box">
+        <div class="sidebar__escrow-head">
+          <span>Свободный депозит</span>
+          <span class="status-dot status-dot--orange" id="escrow-status-dot" title="Эскроу-контур"></span>
+        </div>
+        <strong class="sidebar__escrow-val" id="sidebar-bank">0 ₽</strong>
+        <div class="sidebar__escrow-sub">
+          <span>В пулах кампаний</span>
+          <span class="mono" id="sidebar-locked-bank">0 ₽</span>
+        </div>
+        <div class="sidebar__escrow-actions">
+          <button type="button" class="btn btn--secondary btn--sm" id="open-topup-modal-sidebar">Пополнить</button>
+          <button type="button" class="btn btn--primary btn--sm" id="open-create-modal-sidebar">Задание</button>
+        </div>
+      </div>
+
+      <div class="sidebar__footer">
+        <a href="../clipper-platform/index.html" class="sidebar__ext-link">
+          <span>Кабинет клиппера</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+        </a>
+        <a href="../landing/index.html" class="sidebar__ext-link">
+          <span>Промо-страница</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        </a>
+      </div>
+    </aside>
+
+    <!-- ============ MAIN WORKSPACE ============ -->
+    <div class="workspace">
+      <header class="topbar">
+        <div class="topbar__left">
+          <button type="button" class="burger" id="mobile-menu-btn" aria-label="Открыть навигацию">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          <div class="topbar__breadcrumb">
+            <h1 class="topbar__title" id="page-title">Сводка и охват</h1>
+            <span class="topbar__period" id="page-subtitle">Октябрь 2026</span>
+          </div>
+        </div>
+
+        <div class="topbar__right">
+          <button type="button" class="btn btn--secondary btn--sm" id="open-topup-modal-top">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+            <span>Пополнить банк</span>
+          </button>
+
+          <button type="button" class="btn btn--primary btn--sm" id="open-create-modal-top">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span>Создать задание</span>
+          </button>
+
+          <button type="button" class="user-trigger" id="topbar-user-btn">
+            <span class="avatar-monogram" id="topbar-monogram">?</span>
+            <span class="user-trigger__name" id="topbar-company">Войти / Регистрация</span>
+          </button>
+        </div>
+      </header>
+
+      <main class="content">
+        <!-- ============ KPI STRIP WITH RENDERED CORPORATE ESCROW CARD ============ -->
+        <section class="kpi-strip" aria-label="Ключевые показатели заказчика">
+          <div class="kpi-card kpi-card--accent-top">
+            <div class="kpi-card__head">
+              <span class="kpi-card__label">Свободный депозит</span>
+            </div>
+            <strong class="kpi-card__value" id="kpi-free-bank">0 ₽</strong>
+            <div class="kpi-card__foot">
+              <span>Готов к распределению в пулы заданий</span>
+            </div>
+            <!-- Studio Corporate Escrow Card -->
+            <div class="studio-card-visual" aria-hidden="true">
+              <div class="studio-card-visual__top">
+                <span class="studio-card-visual__chip"></span>
+                <span class="studio-card-visual__bank" id="studio-card-org">ESCROW • БИЗНЕС</span>
+              </div>
+              <div class="studio-card-visual__num" id="studio-card-inn">•• ————</div>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-card__head">
+              <span class="kpi-card__label">В активных пулах кампаний</span>
+            </div>
+            <strong class="kpi-card__value" id="kpi-locked-bank">0 ₽</strong>
+            <div class="kpi-card__foot">
+              <span>Зарезервировано под выплаты авторам</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-card__head">
+              <span class="kpi-card__label">Подтвержденные просмотры</span>
+            </div>
+            <strong class="kpi-card__value" id="kpi-total-views">0</strong>
+            <div class="kpi-card__foot">
+              <span>Суммарно по всем принятым роликам</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-card__head">
+              <span class="kpi-card__label">Средняя ставка CPM</span>
+            </div>
+            <strong class="kpi-card__value" id="kpi-avg-cpm">0 ₽</strong>
+            <div class="kpi-card__foot">
+              <span>По вашим активным заданиям</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ TAB 1: СВОДКА И ОХВАТ ============ -->
+        <section class="tab-pane is-active" id="tab-dashboard">
+          <div class="dashboard-grid">
+            <div class="panel">
+              <div class="panel__head">
+                <div>
+                  <h2 class="panel__title">Прирост органических просмотров по площадкам</h2>
+                  <p class="panel__subtitle">Динамика трафика по сданным роликам ваших кампаний</p>
+                </div>
+                <span class="plat-tag plat-tag--cat">Антифрод включен</span>
+              </div>
+
+              <div class="curve-chart">
+                <div class="curve-chart__legend">
+                  <span class="legend-item"><span class="status-dot status-dot--orange"></span> YouTube Shorts <strong id="adv-leg-yt">0</strong></span>
+                  <span class="legend-item"><span class="status-dot status-dot--blue"></span> VK Клипы <strong id="adv-leg-vk">0</strong></span>
+                  <span class="legend-item"><span class="status-dot status-dot--emerald"></span> TikTok <strong id="adv-leg-tt">0</strong></span>
+                  <span class="legend-item"><span class="status-dot status-dot--purple"></span> Reels <strong id="adv-leg-ig">0</strong></span>
+                </div>
+
+                <div class="curve-chart__svg-wrap">
+                  <svg class="curve-chart__svg" viewBox="0 0 720 175" preserveAspectRatio="none" aria-label="Динамика органических просмотров">
+                    <line x1="0" y1="25" x2="720" y2="25" stroke="rgba(237,237,237,0.06)" stroke-width="1"/>
+                    <line x1="0" y1="75" x2="720" y2="75" stroke="rgba(237,237,237,0.06)" stroke-width="1"/>
+                    <line x1="0" y1="125" x2="720" y2="125" stroke="rgba(237,237,237,0.08)" stroke-width="1"/>
+                    <line x1="0" y1="145" x2="720" y2="145" stroke="rgba(237,237,237,0.12)" stroke-width="1"/>
+                    <path id="adv-curve-path" d="M0,145 L720,145" fill="none" stroke="#ff5514" stroke-width="2.25"/>
+                    <text x="4" y="168" fill="#85858b" font-family="JetBrains Mono, monospace" font-size="10">ЗАПУСК КАМПАНИЙ</text>
+                    <text x="645" y="168" fill="#85858b" font-family="JetBrains Mono, monospace" font-size="10">ТЕКУЩИЙ СРЕЗ</text>
+                  </svg>
+                </div>
+
+                <div class="platform-share-row">
+                  <div class="share-pill">
+                    <span>YouTube Shorts</span>
+                    <strong id="share-yt">0 просм.</strong>
+                  </div>
+                  <div class="share-pill">
+                    <span>VK Клипы</span>
+                    <strong id="share-vk">0 просм.</strong>
+                  </div>
+                  <div class="share-pill">
+                    <span>TikTok</span>
+                    <strong id="share-tt">0 просм.</strong>
+                  </div>
+                  <div class="share-pill">
+                    <span>Instagram Reels</span>
+                    <strong id="share-ig">0 просм.</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel__head">
+                <div>
+                  <h2 class="panel__title">Очередь модерации</h2>
+                  <p class="panel__subtitle">Ожидают подтверждения выплаты</p>
+                </div>
+                <button type="button" class="btn btn--secondary btn--sm" data-nav-target="moderation">Все ролики</button>
+              </div>
+              <div class="mini-mod-list" id="dashboard-pending-list"></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel__head">
+              <div>
+                <h2 class="panel__title">Ваши задания для клипперов</h2>
+                <p class="panel__subtitle">Все созданные задания сразу отображаются в каталоге на платформе клипперов</p>
+              </div>
+              <button type="button" class="btn btn--primary btn--sm" id="open-create-modal-dash">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                <span>Новое задание</span>
+              </button>
+            </div>
+
+            <div class="table-scroll" id="dashboard-campaigns-wrap"></div>
+          </div>
+        </section>
+
+        <!-- ============ TAB 2: МОИ ЗАДАНИЯ (КАМПАНИИ) ============ -->
+        <section class="tab-pane" id="tab-campaigns">
+          <div class="panel">
+            <div class="panel__head" style="margin-bottom:0;">
+              <div>
+                <h2 class="panel__title">Управление кампаниями и пулами</h2>
+                <p class="panel__subtitle">Задавайте ставку за 1 000 просмотров, прикрепляйте исходники и пополняйте банк активных офферов</p>
+              </div>
+              <button type="button" class="btn btn--primary btn--sm" id="open-create-modal-camp">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                <span>Создать задание</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="campaigns-grid" id="adv-campaigns-grid"></div>
+        </section>
+
+        <!-- ============ TAB 3: МОДЕРАЦИЯ КЛИПОВ ============ -->
+        <section class="tab-pane" id="tab-moderation">
+          <div class="panel">
+            <div class="panel__head" style="margin-bottom:0;">
+              <div>
+                <h2 class="panel__title">Проверка роликов и подтверждение выплат</h2>
+                <p class="panel__subtitle">Проверяйте наличие промо-ссылки в закрепе и подтверждайте списание средств из пула кампании</p>
+              </div>
+              <div class="filter-chips" id="mod-status-filters">
+                <button type="button" class="chip is-active" data-mod-status="ALL">Все ролики</button>
+                <button type="button" class="chip" data-mod-status="ON_HOLD">Ожидают решения</button>
+                <button type="button" class="chip" data-mod-status="APPROVED">Одобренные</button>
+                <button type="button" class="chip" data-mod-status="REJECTED">Отклоненные</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="submissions-list" id="moderation-list"></div>
+        </section>
+
+        <!-- ============ TAB 4: ЭСКРОУ-БАНК И УПД ============ -->
+        <section class="tab-pane" id="tab-bank">
+          <div class="wallet-grid">
+            <div class="panel">
+              <div class="wallet-main__header">
+                <div>
+                  <span class="wallet-label">Свободный депозит заказчика</span>
+                  <h2 class="wallet-big-amount" id="bank-available-big">0 ₽</h2>
+                </div>
+                <span class="status-badge status-badge--approved">Эскроу активен</span>
+              </div>
+
+              <div class="wallet-stats-row">
+                <div class="wallet-mini-stat">
+                  <span>В пулах кампаний</span>
+                  <strong id="bank-locked-val">0 ₽</strong>
+                </div>
+                <div class="wallet-mini-stat">
+                  <span>Комиссия платформы</span>
+                  <strong>20% (включена в пул)</strong>
+                </div>
+                <div class="wallet-mini-stat">
+                  <span>Закрывающие УПД</span>
+                  <strong class="text-emerald">ЭДО Диадок / СБИС</strong>
+                </div>
+              </div>
+
+              <form id="topup-bank-form">
+                <div class="quick-amounts" style="margin-bottom:14px;">
+                  <button type="button" class="chip mono" data-quick-sum="25000">+25 000 ₽</button>
+                  <button type="button" class="chip mono" data-quick-sum="50000">+50 000 ₽</button>
+                  <button type="button" class="chip mono" data-quick-sum="100000">+100 000 ₽</button>
+                  <button type="button" class="chip mono" data-quick-sum="250000">+250 000 ₽</button>
+                </div>
+
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label for="topup-amount">Сумма пополнения (₽)</label>
+                    <input type="number" id="topup-amount" class="mono" min="5000" step="1000" value="50000" inputmode="numeric" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="topup-method">Способ зачисления</label>
+                    <select id="topup-method" class="select-input" style="width:100%;">
+                      <option value="СБП Бизнес / Корпоративная карта">СБП Бизнес / Корпоративная карта</option>
+                      <option value="Расчетный счет ООО / ИП (УПД по ЭДО)">Расчетный счет ООО / ИП (УПД по ЭДО)</option>
+                      <option value="Т-Бизнес Эквайринг">Т-Бизнес Эквайринг</option>
+                    </select>
+                  </div>
+                </div>
+
+                <button type="submit" class="btn btn--primary btn--lg btn--full">Зачислить на свободный депозит</button>
+              </form>
+            </div>
+
+            <div class="panel">
+              <div class="panel__head">
+                <div>
+                  <h3 class="panel__title">Журнал транзакций и аллокаций</h3>
+                  <p class="panel__subtitle">Пополнения счета и переводы в пулы кампаний</p>
+                </div>
+              </div>
+              <div class="ledger-list" id="advertiser-ledger-list"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ TAB 5: РЕЕСТР АВТОРОВ (CRM) ============ -->
+        <section class="tab-pane" id="tab-clippers">
+          <div class="panel">
+            <div class="panel__head">
+              <div>
+                <h2 class="panel__title">Авторы, сдавшие ролики по вашим заданиям</h2>
+                <p class="panel__subtitle">Формируется автоматически по мере поступления клипов от нарезчиков</p>
+              </div>
+            </div>
+
+            <div class="table-scroll" id="crm-table-container"></div>
+          </div>
+        </section>
+
+        <!-- ============ TAB 6: РЕКВИЗИТЫ И ОРД (347-ФЗ) ============ -->
+        <section class="tab-pane" id="tab-settings">
+          <div class="wallet-grid">
+            <div class="panel">
+              <div class="panel__head">
+                <div>
+                  <h2 class="panel__title">Юридические реквизиты и интеграция с ОРД</h2>
+                  <p class="panel__subtitle">Автоматическая регистрация креативов и передача актов в ЕРИР согласно 347-ФЗ</p>
+                </div>
+                <button type="button" class="btn btn--danger-ghost btn--sm" id="logout-btn">Выйти из аккаунта</button>
+              </div>
+
+              <form id="company-settings-form">
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label for="set-company-name">Публичное имя бренда / канала</label>
+                    <input type="text" id="set-company-name" placeholder="Название бренда или канала" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="set-legal-name">Юридическое лицо для УПД</label>
+                    <input type="text" id="set-legal-name" placeholder="ООО или ИП" />
+                  </div>
+                </div>
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label for="set-inn">ИНН организации / ИП</label>
+                    <input type="text" id="set-inn" class="mono" inputmode="numeric" placeholder="10 или 12 цифр" />
+                  </div>
+                  <div class="form-group">
+                    <label for="set-ord">Оператор рекламных данных</label>
+                    <select id="set-ord" class="select-input" style="width:100%;">
+                      <option value="ОРД VK (Авто-маркировка ЕРИР)">ОРД VK (Авто-маркировка ЕРИР)</option>
+                      <option value="ОРД-А (Амбердата)">ОРД-А (Амбердата)</option>
+                      <option value="Первый ОРД">Первый ОРД</option>
+                    </select>
+                  </div>
+                </div>
+                <button type="submit" class="btn btn--primary">Сохранить реквизиты</button>
+              </form>
+            </div>
+
+            <div class="panel">
+              <div class="panel__head">
+                <div>
+                  <h3 class="panel__title">Правила расчетного контура</h3>
+                  <p class="panel__subtitle">Архитектура удержания и распределения пулов</p>
+                </div>
+              </div>
+              <ul class="detail-list">
+                <li>1. Списание средств из пула происходит только за подтвержденные API просмотры после одобрения модератором</li>
+                <li>2. Каждый ролик проверяется на наличие вашего промокода или ссылки в описании</li>
+                <li>3. При выделении 50 000 ₽ в задание: 40 000 ₽ (80%) поступает в чистый пул выплат авторам, 10 000 ₽ (20%) составляет сервисный сбор платформы</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- ============ MODAL 0: РЕГИСТРАЦИЯ ЗАКАЗЧИКА ЧЕРЕЗ @VerificationCodes (<dialog>) ============ -->
+  <dialog id="auth-dialog" class="modal-dialog" closedby="any" aria-labelledby="auth-dialog-title">
+    <div class="modal-dialog__box">
+      <form method="dialog" class="modal-dialog__close-form">
+        <button type="submit" value="cancel" class="modal-dialog__close" aria-label="Закрыть окно">✕</button>
+      </form>
+
+      <div class="tg-verify-header">
+        <span class="badge badge--accent">Telegram Gateway</span>
+        <span class="mono text-muted" style="font-size:0.75rem;">@VerificationCodes</span>
+      </div>
+
+      <h2 id="auth-dialog-title" class="modal-dialog__title">Регистрация заказчика</h2>
+      <p class="modal-dialog__subtitle">Заполните анкету рекламодателя — на ваш номер придет проверочный код в чат @VerificationCodes в Telegram</p>
+
+      <form id="auth-form">
+        <div class="form-group">
+          <label for="auth-company">Название бренда, канала или агентства</label>
+          <span id="auth-company-hint" class="field-hint">Отображается клипперам в карточке ваших заданий</span>
+          <input
+            type="text"
+            id="auth-company"
+            name="organization"
+            autocomplete="organization"
+            enterkeyhint="next"
+            placeholder="Например: Stream Team или Бренд одежды"
+            aria-describedby="auth-company-hint"
+            required
+          />
+          <div class="error-msg">Укажите название бренда или канала</div>
+        </div>
+
+        <div class="form-group">
+          <label for="auth-email">Рабочая электронная почта</label>
+          <span id="auth-email-hint" class="field-hint">Формат: name@company.ru</span>
+          <input
+            type="email"
+            id="auth-email"
+            name="email"
+            autocomplete="username"
+            spellcheck="false"
+            autocorrect="off"
+            autocapitalize="off"
+            enterkeyhint="next"
+            placeholder="partner@company.ru"
+            aria-describedby="auth-email-hint"
+            required
+          />
+          <div class="error-msg">Введите корректный адрес электронной почты</div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="auth-phone">Телефон в Telegram</label>
+            <input
+              type="tel"
+              id="auth-phone"
+              name="tel"
+              autocomplete="tel"
+              enterkeyhint="next"
+              placeholder="+7 (999) 000-00-00"
+              required
+            />
+            <div class="error-msg">Укажите телефон для кода @VerificationCodes</div>
+          </div>
+
+          <div class="form-group">
+            <label for="auth-inn">ИНН юрлица / ИП</label>
+            <input
+              type="text"
+              id="auth-inn"
+              class="mono"
+              inputmode="numeric"
+              enterkeyhint="next"
+              placeholder="Необязательно"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="auth-password">Пароль (не менее 6 символов)</label>
+          <div class="input-with-action">
+            <input
+              type="password"
+              id="auth-password"
+              name="new-password"
+              autocomplete="new-password"
+              minlength="6"
+              enterkeyhint="done"
+              placeholder="Минимум 6 символов"
+              required
+            />
+            <button type="button" class="btn-inline" id="toggle-pass-btn" aria-label="Показать пароль">Показать</button>
+          </div>
+          <div class="error-msg">Пароль должен содержать минимум 6 символов</div>
+        </div>
+
+        <button type="submit" class="btn btn--primary btn--lg btn--full" id="auth-send-code-btn">
+          Получить код в @VerificationCodes
+        </button>
+      </form>
+
+      <!-- ШАГ 2: ПОДТВЕРЖДЕНИЕ КОДА ИЗ @VerificationCodes -->
+      <form id="auth-otp-form" hidden>
+        <div class="tg-otp-notice">
+          <div class="tg-otp-notice__row">
+            <span class="status-dot status-dot--orange"></span>
+            <strong>Проверьте чат @VerificationCodes в Telegram</strong>
+          </div>
+          <p class="tg-otp-notice__text">
+            Мы отправили 6-значный код верификации на номер <strong class="mono" id="otp-target-phone">+7...</strong>.
+          </p>
+        </div>
+
+        <div class="tg-sandbox-box" id="otp-sandbox-box" hidden>
+          <div>
+            <span class="text-muted" style="font-size:0.75rem; display:block;">Демо-код @VerificationCodes (до подключения токена шлюза):</span>
+            <strong class="mono text-accent" id="otp-sandbox-code" style="font-size:1.1rem; letter-spacing:0.12em;">000000</strong>
+          </div>
+          <button type="button" class="btn btn--secondary btn--sm" id="otp-autofill-btn">Подставить</button>
+        </div>
+
+        <div class="form-group" style="margin-top:14px;">
+          <label for="auth-otp-code">6-значный код подтверждения</label>
+          <input
+            type="text"
+            id="auth-otp-code"
+            name="one-time-code"
+            class="mono otp-code-input"
+            autocomplete="one-time-code"
+            inputmode="numeric"
+            pattern="[0-9]{6}"
+            maxlength="6"
+            enterkeyhint="done"
+            placeholder="000000"
+            required
+          />
+          <div class="error-msg">Введите 6-значный код из @VerificationCodes</div>
+        </div>
+
+        <div class="otp-actions-row">
+          <button type="button" class="btn btn--ghost btn--sm" id="otp-back-btn">Изменить номер</button>
+          <button type="button" class="btn btn--secondary btn--sm" id="otp-resend-btn" disabled>Повторно через 45 с</button>
+        </div>
+
+        <button type="submit" class="btn btn--primary btn--lg btn--full" id="auth-verify-submit-btn" style="margin-top:12px;">
+          Подтвердить код и создать кабинет
+        </button>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- ============ MODAL 1: СОЗДАТЬ НОВОЕ ЗАДАНИЕ (<dialog>) ============ -->
+  <dialog id="create-campaign-dialog" class="modal-dialog modal-dialog--wide" closedby="any" aria-labelledby="create-camp-title">
+    <div class="modal-dialog__box">
+      <form method="dialog" class="modal-dialog__close-form">
+        <button type="submit" value="cancel" class="modal-dialog__close" aria-label="Закрыть окно">✕</button>
+      </form>
+
+      <h2 id="create-camp-title" class="modal-dialog__title">Создать задание для клипперов</h2>
+      <p class="modal-dialog__subtitle">После публикации кампания сразу появится в каталоге на платформе клипперов</p>
+
+      <form id="create-campaign-form">
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="camp-title">Название кампании</label>
+            <input type="text" id="camp-title" placeholder="Нарезки нового выпуска или стрима" required />
+          </div>
+          <div class="form-group">
+            <label for="camp-adv-name">Имя заказчика / бренда</label>
+            <input type="text" id="camp-adv-name" placeholder="Ваш бренд или канал" required />
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="camp-category">Категория</label>
+            <select id="camp-category" class="select-input" style="width:100%;">
+              <option value="Стримы / Гейминг">Стримы / Гейминг</option>
+              <option value="Подкасты / Шоу">Подкасты / Шоу</option>
+              <option value="Бренды / E-commerce">Бренды / E-commerce</option>
+              <option value="Онлайн-школы / EdTech">Онлайн-школы / EdTech</option>
+              <option value="Музыка">Музыка</option>
+              <option value="IT / Игры">IT / Игры</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="camp-source">Ссылка на облако с исходниками</label>
+            <input type="url" id="camp-source" class="mono" placeholder="https://disk.yandex.ru/d/..." required />
+          </div>
+        </div>
+
+        <div class="form-row-3">
+          <div class="form-group">
+            <label for="camp-budget">Выделяемый бюджет (₽)</label>
+            <input type="number" id="camp-budget" class="mono" min="10000" step="5000" value="50000" inputmode="numeric" required />
+          </div>
+          <div class="form-group">
+            <label for="camp-cpm">Ставка за 1 000 просм. (₽)</label>
+            <input type="number" id="camp-cpm" class="mono" min="50" max="500" step="5" value="120" inputmode="numeric" required />
+          </div>
+          <div class="form-group">
+            <label for="camp-cap">Лимит на 1 ролик (₽)</label>
+            <input type="number" id="camp-cap" class="mono" min="1000" step="1000" value="12000" inputmode="numeric" required />
+          </div>
+        </div>
+
+        <div class="budget-calc-box" id="budget-calc-preview">
+          <div>
+            <span>Чистый пул авторам (80%)</span>
+            <strong id="calc-net-pool" class="text-emerald">40 000 ₽</strong>
+          </div>
+          <div>
+            <span>Комиссия Konveer (20%)</span>
+            <strong id="calc-fee">10 000 ₽</strong>
+          </div>
+          <div>
+            <span>Расчетный объем просмотров</span>
+            <strong id="calc-views" class="text-accent">~333 300 просм.</strong>
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="camp-promo">Промо-ссылка или артикул для закрепа</label>
+            <input type="text" id="camp-promo" class="mono" placeholder="https://t.me/... или артикул WB" required />
+          </div>
+          <div class="form-group">
+            <label for="camp-tags">Обязательные хэштеги</label>
+            <input type="text" id="camp-tags" class="mono" placeholder="#стрим #нарезка #шортс" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="camp-brief">Техническое задание для авторов</label>
+          <textarea id="camp-brief" rows="3" class="textarea-input" placeholder="Опишите требования к монтажу, субтитрам и ссылке в закрепе" required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn--primary btn--lg btn--full">Опубликовать задание в каталоге</button>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- ============ MODAL 2: ДОЛИТЬ БАНК В ЗАДАНИЕ (<dialog>) ============ -->
+  <dialog id="add-camp-bank-dialog" class="modal-dialog" closedby="any" aria-labelledby="add-camp-bank-title">
+    <div class="modal-dialog__box">
+      <form method="dialog" class="modal-dialog__close-form">
+        <button type="submit" value="cancel" class="modal-dialog__close" aria-label="Закрыть">✕</button>
+      </form>
+      <h2 id="add-camp-bank-title" class="modal-dialog__title">Пополнить пул кампании</h2>
+      <p class="modal-dialog__subtitle" id="add-camp-bank-subtitle">Перевод средств со свободного депозита в пул выбранного задания</p>
+
+      <form id="add-camp-bank-form">
+        <input type="hidden" id="add-bank-camp-id" />
+        <div class="form-group">
+          <label for="add-bank-amount">Сумма пополнения (₽)</label>
+          <input type="number" id="add-bank-amount" class="mono" min="5000" step="5000" value="25000" inputmode="numeric" required />
+        </div>
+        <p class="text-muted" style="font-size:0.75rem; margin-bottom:16px;">
+          Свободный депозит: <strong class="mono text-emerald" id="modal-free-bank-hint">0 ₽</strong>
+        </p>
+        <button type="submit" class="btn btn--primary btn--lg btn--full">Зачислить в пул задания</button>
+      </form>
+    </div>
+  </dialog>
+
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

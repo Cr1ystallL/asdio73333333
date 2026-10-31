@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Konveer — биржа нарезчиков для Shorts, Reels и VK Клипов</title>
+  <meta name="description" content="Konveer — биржа нарезчиков (клипперов). Зарабатывай на нарезках популярных стримов, подкастов и контента. Оплата за реальные просмотры." />
+  <meta name="theme-color" content="#070707" />
+  <link rel="icon" type="image/png" href="assets/k.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="bg" aria-hidden="true">
+    <span class="bg__glow bg__glow--hero"></span>
+    <span class="bg__glow bg__glow--mid"></span>
+    <span class="bg__shard bg__shard--1"></span>
+    <span class="bg__shard bg__shard--2"></span>
+  </div>
+
+  <!-- ============ HEADER ============ -->
+  <header class="header">
+    <div class="container header__inner">
+      <a href="#" class="logo" aria-label="Konveer — на главную">
+        <img src="assets/logo.png" alt="Konveer" width="166" height="40" />
+      </a>
+
+      <nav class="nav" aria-label="Основная навигация">
+        <a href="#hero" class="nav__link is-active">Главная</a>
+        <a href="#advertisers" class="nav__link">Заказчикам</a>
+        <a href="#clippers" class="nav__link">Нарезчикам</a>
+        <a href="#how" class="nav__link">Как это работает</a>
+        <a href="#contacts" class="nav__link">Контакты</a>
+      </nav>
+
+      <div class="header__actions">
+        <button type="button" class="btn btn--ghost btn--sm" data-open-role="any">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="7.5" r="4.5"/><path d="M3.5 21c0-4.4 3.8-7.5 8.5-7.5s8.5 3.1 8.5 7.5z"/></svg>
+          Войти
+        </button>
+        <button type="button" class="btn btn--primary btn--sm" data-open-role="any">Регистрация <span class="arrow">→</span></button>
+        <button class="burger" aria-label="Открыть меню" aria-expanded="false"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- ============ HERO ============ -->
+    <section class="hero" id="hero">
+      <div class="container hero__inner">
+        <div class="hero__content">
+          <div class="badge"><span class="badge__icon">🔥</span> Монетизируй свои нарезки и получай миллионы охватов.</div>
+
+          <h1 class="hero__title">
+            <span class="hero__line">Биржа нарезчиков</span>
+            <span class="hero__line hero__line--accent">(Клипперов)</span>
+            <span class="hero__line hero__line--sub">для Shorts, Reels и VK Клипов</span>
+          </h1>
+
+          <p class="hero__text">Режь популярные стримы, подкасты и шоу — получай деньги за каждую 1&nbsp;000 просмотров. Заказчикам — вирусный охват с оплатой только за результат.</p>
+
+          <div class="hero__buttons">
+            <button type="button" class="btn btn--primary btn--lg" data-open-role="any">Начать зарабатывать <span class="arrow">→</span></button>
+            <a href="#how" class="btn btn--outline btn--lg">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 3.5v17l14-8.5z"/></svg>
+              Как это работает?
+            </a>
+          </div>
+
+          <div class="users">
+            <div class="users__stack">
+              <img src="assets/avatars/a1.png" alt="" />
+              <img src="assets/avatars/a2.png" alt="" />
+              <img src="assets/avatars/a3.png" alt="" />
+              <img src="assets/avatars/a4.png" alt="" />
+              <img src="assets/avatars/a5.png" alt="" />
+            </div>
+            <div class="users__text"><strong>+248 721</strong><span>активных пользователей</span></div>
+          </div>
+        </div>
+
+        <div class="hero__visual" aria-hidden="true">
+          <span class="orbit orbit--1"></span>
+          <span class="orbit orbit--2"></span>
+          <span class="hero__flare"></span>
+          <img class="hero__img" src="assets/obshiy.png" alt="" />
+          <span class="subscribe">Подписаться</span>
+          <img class="coin coin--1" src="assets/coin.png" alt="" />
+          <img class="coin coin--2" src="assets/coin.png" alt="" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ FOR CLIPPERS & ADVERTISERS ============ -->
+    <section class="container" id="advertisers">
+      <div class="panel about">
+        <div class="about__col" id="clippers">
+          <h2 class="section-title"><span class="slash">/</span> Нарезчикам</h2>
+          <p class="about__text">Монтируешь в CapCut на телефоне или ПК? Бери готовые исходники топовых стримеров, блогеров и брендов, делай яркие нарезки и заливай в Shorts, Reels, VK Клипы или TikTok. Мы платим реальные деньги за каждую 1&nbsp;000 просмотров твоих роликов.</p>
+          <button type="button" class="btn btn--pill" data-open-role="clipper">Выбрать задание <span class="arrow">→</span></button>
+        </div>
+
+        <div class="about__col">
+          <h2 class="section-title"><span class="slash">/</span> Заказчикам</h2>
+          <p class="about__text">Нужны миллионы просмотров для стрима, подкаста, бренда, игры или онлайн-школы? Не переплачивайте одному монтажёру без гарантии результата — запустите кампанию, и сотни авторов зальют соцсети вирусными роликами с оплатой строго за живые просмотры.</p>
+          <button type="button" class="btn btn--pill" data-open-role="advertiser">Запустить кампанию <span class="arrow">→</span></button>
+        </div>
+
+        <div class="growth">
+          <div class="growth__visual">
+            <img class="growth__img" src="assets/statup.png" alt="График роста просмотров" />
+          </div>
+          <div class="growth__label"><strong>Миллионы<br />просмотров</strong><span>и реальные деньги</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ HOW IT WORKS ============ -->
+    <section class="container how" id="how">
+      <h2 class="section-title section-title--lg"><span class="slash">/</span> Как это работает?</h2>
+
+      <div class="steps">
+        <article class="step">
+          <img class="step__img" src="assets/video.png" alt="" />
+          <div class="step__body">
+            <h3 class="step__title"><span class="step__num">1</span> Кампания и бюджет</h3>
+            <p class="step__text">Заказчик загружает исходники, указывает требования и пополняет пул кампании (например, 50&nbsp;000&nbsp;₽). Нарезчик выбирает задание в каталоге и сразу видит ставку за 1&nbsp;000 просмотров.</p>
+          </div>
+        </article>
+
+        <span class="steps__arrow" aria-hidden="true">→</span>
+
+        <article class="step">
+          <img class="step__img step__img--phone" src="assets/narezka.png" alt="" />
+          <div class="step__body">
+            <h3 class="step__title"><span class="step__num">2</span> Нарезка и публикация</h3>
+            <p class="step__text">Нарезчик скачивает видео, за 10 минут делает динамичный ролик с субтитрами, выкладывает его в Shorts, Reels, VK Клипы или TikTok и прикрепляет ссылку в личном кабинете.</p>
+          </div>
+        </article>
+
+        <span class="steps__arrow" aria-hidden="true">→</span>
+
+        <article class="step">
+          <img class="step__img" src="assets/koshel.png" alt="" />
+          <div class="step__body">
+            <h3 class="step__title"><span class="step__num">3</span> Автоматические выплаты</h3>
+            <p class="step__text">Платформа автоматически проверяет просмотры через API, защищает бюджет заказчика от накруток и начисляет деньги на баланс нарезчика с быстрым выводом по СБП.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============ EARNINGS + STATS ============ -->
+    <section class="container bottom" id="earn">
+      <div class="earn">
+        <span class="earn__sparkle earn__sparkle--1">✦</span>
+        <span class="earn__sparkle earn__sparkle--2">✦</span>
+        <div class="earn__visual" aria-hidden="true">
+          <img class="earn__crown" src="assets/korona.png" alt="" />
+          <img class="coin coin--e1" src="assets/coin.png" alt="" />
+          <img class="coin coin--e2" src="assets/coin.png" alt="" />
+          <img class="coin coin--e3" src="assets/coin.png" alt="" />
+        </div>
+        <div class="earn__content">
+          <h2 class="earn__title">Твой заработок</h2>
+          <p class="earn__text">Выкладывай больше роликов — получай<br />оплату за каждую тысячу просмотров.</p>
+          <div class="earn__plate">
+            <strong>до 150 ₽</strong>
+            <span>за 1 000 просмотров</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats" id="stats">
+        <h2 class="section-title section-title--lg"><span class="slash">/</span> Платформа в цифрах</h2>
+        <div class="stats__grid">
+          <div class="stat">
+            <svg class="stat__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4l13 8-13 8z"/></svg>
+            <div><strong class="stat__value">1.2B+</strong><span class="stat__label">Просмотров<br />в месяц</span></div>
+          </div>
+          <div class="stat">
+            <svg class="stat__icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17" cy="8.5" r="2.8"/><path d="M16.5 14c3 0 5 2 5 5"/></svg>
+            <div><strong class="stat__value">350K+</strong><span class="stat__label">Активных<br />нарезчиков</span></div>
+          </div>
+          <div class="stat">
+            <svg class="stat__icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8.5 7V5a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v2M3 12.5h18M10.5 12.5v2h3v-2"/></svg>
+            <div><strong class="stat__value">2.5M+ ₽</strong><span class="stat__label">Выплачено<br />пользователям</span></div>
+          </div>
+        </div>
+
+        <div class="cta">
+          <button type="button" class="btn btn--primary btn--xl" data-open-role="any">Присоединяйся прямо сейчас <span class="arrow">→</span></button>
+          <p class="cta__note">Без вложений. Быстрая регистрация.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ ROLE SELECTION MODAL ============ -->
+  <dialog id="role-dialog" class="role-dialog" closedby="any" aria-labelledby="role-dialog-title">
+    <div class="role-dialog__box">
+      <form method="dialog" class="role-dialog__close-form">
+        <button type="submit" value="cancel" class="role-dialog__close" aria-label="Закрыть окно выбора роли">✕</button>
+      </form>
+
+      <div class="role-dialog__header">
+        <span class="role-dialog__eyebrow">Рабочий контур Konveer</span>
+        <h2 id="role-dialog-title" class="role-dialog__title">Выберите рабочее место</h2>
+        <p class="role-dialog__subtitle">Платформа разделена на два независимых кабинета для авторов и рекламодателей</p>
+      </div>
+
+      <div class="role-dialog__grid">
+        <a href="../clipper-platform/index.html" class="role-card" data-role-card="clipper" autofocus>
+          <div class="role-card__top">
+            <div class="role-card__icon-wrap">
+              <img src="assets/narezka.png" alt="" class="role-card__img" />
+            </div>
+            <span class="role-card__tag role-card__tag--emerald">До 150 ₽ / 1 000 просм.</span>
+          </div>
+          <h3 class="role-card__name">Кабинет клиппера</h3>
+          <p class="role-card__desc">Берите исходники стримеров, блогеров и брендов, публикуйте нарезки и получайте выплаты за подтвержденные просмотры</p>
+          <ul class="role-card__list">
+            <li>Каталог заказчиков и заданий с открытым пулом</li>
+            <li>Очередь взятых заказов, ТЗ, таймкоды и сдача ссылок</li>
+            <li>Почасовой учет по API и вывод на карту по СБП от 500 ₽</li>
+          </ul>
+          <span class="role-card__btn role-card__btn--primary">Перейти в Konveer Studio →</span>
+        </a>
+
+        <a href="../advertiser-platform/index.html" class="role-card" data-role-card="advertiser">
+          <div class="role-card__top">
+            <div class="role-card__icon-wrap">
+              <img src="assets/video.png" alt="" class="role-card__img" />
+            </div>
+            <span class="role-card__tag role-card__tag--orange">Оплата за результат</span>
+          </div>
+          <h3 class="role-card__name">Кабинет заказчика</h3>
+          <p class="role-card__desc">Создавайте задания для нарезчиков, пополняйте эскроу-депозит и получайте органический охват в Shorts, Reels, VK и TikTok</p>
+          <ul class="role-card__list">
+            <li>Конструктор кампаний, загрузка исходников и брифа</li>
+            <li>Управление ставкой CPM, лимитами и пулами заданий</li>
+            <li>Модерация роликов, антифрод-холд и закрывающие акты ОРД</li>
+          </ul>
+          <span class="role-card__btn role-card__btn--secondary">Перейти в Konveer Business →</span>
+        </a>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer" id="contacts">
+    <div class="container footer__inner">
+      <a href="#" class="logo logo--footer" aria-label="Konveer"><img src="assets/logo.png" alt="Konveer" width="146" height="35" /></a>
+      <nav class="footer__nav" aria-label="Навигация в подвале">
+        <a href="#hero">Главная</a>
+        <a href="#advertisers">Заказчикам</a>
+        <a href="#clippers">Нарезчикам</a>
+        <a href="#how">Как это работает</a>
+        <a href="#contacts">Контакты</a>
+      </nav>
+      <div class="footer__social">
+        <a href="https://t.me/konveer_official" target="_blank" rel="noopener" aria-label="Telegram" class="footer__social-link">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.6 3.3 2.9 10.5c-1.3.5-1.2 1.3-.2 1.6l4.8 1.5 1.8 5.6c.2.7.5.8 1 .8.5 0 .7-.2 1-.5l2.4-2.3 4.9 3.6c.9.5 1.5.2 1.8-.8l3.2-15.1c.3-1.3-.5-1.9-1.4-1.6zM8.6 13.3l9.8-6.2c.5-.3.9 0 .5.3l-8.1 7.3-.3 3.4z"/></svg>
+          <span>Telegram</span>
+        </a>
+      </div>
+      <p class="footer__copy">© 2026 Konveer. Все права защищены.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

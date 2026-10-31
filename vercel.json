@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/landing/index.html"
+    },
+    {
+      "source": "/clipper",
+      "destination": "/clipper-platform/index.html"
+    },
+    {
+      "source": "/advertiser",
+      "destination": "/advertiser-platform/index.html"
+    }
+  ]
+}
