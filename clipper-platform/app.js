@@ -1438,7 +1438,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   ];
 
-  function initOnboardingTour({ steps, storageKey }) {
+  function initOnboardingTour({ steps, storageKey, warningDesc }) {
     let backdrop = document.querySelector('.tour-backdrop');
     let spotlight = document.querySelector('.tour-spotlight');
     let card = document.querySelector('.tour-card');
@@ -1446,21 +1446,34 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!backdrop) {
       backdrop = document.createElement('div');
       backdrop.className = 'tour-backdrop';
+      backdrop.style.display = 'none';
       document.body.appendChild(backdrop);
+    } else {
+      backdrop.style.display = 'none';
     }
+
     if (!spotlight) {
       spotlight = document.createElement('div');
       spotlight.className = 'tour-spotlight';
+      spotlight.style.display = 'none';
       document.body.appendChild(spotlight);
+    } else {
+      spotlight.style.display = 'none';
     }
+
     if (!card) {
       card = document.createElement('div');
       card.className = 'tour-card';
+      card.id = 'tour-card';
+      card.style.display = 'none';
       document.body.appendChild(card);
+    } else {
+      card.style.display = 'none';
     }
 
     let currentStep = 0;
     let isRunning = false;
+    let isConfirmingSkip = false;
 
     function updatePosition() {
       if (!isRunning) return;
@@ -1524,6 +1537,7 @@ document.addEventListener('DOMContentLoaded', () => {
         endTour();
         return;
       }
+      isConfirmingSkip = false;
       currentStep = index;
       const step = steps[currentStep];
 
@@ -1539,7 +1553,7 @@ document.addEventListener('DOMContentLoaded', () => {
       card.innerHTML = `
         <div class="tour-card__top">
           <span class="tour-card__step-badge">ШАГ ${currentStep + 1} ИЗ ${total}</span>
-          <button type="button" class="tour-card__close-btn" id="tour-close-btn" title="Закрыть (Esc)">&times;</button>
+          <button type="button" class="tour-card__close-btn" id="tour-close-btn" title="Закрыть">&times;</button>
         </div>
         <h3 class="tour-card__title">${step.title}</h3>
         <p class="tour-card__desc">${step.desc}</p>
@@ -1553,10 +1567,17 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       `;
 
-      card.querySelector('#tour-close-btn')?.addEventListener('click', endTour);
-      card.querySelector('#tour-skip-btn')?.addEventListener('click', endTour);
+      card.querySelector('#tour-close-btn')?.addEventListener('click', requestSkip);
+      card.querySelector('#tour-skip-btn')?.addEventListener('click', requestSkip);
       card.querySelector('#tour-prev-btn')?.addEventListener('click', () => showStep(currentStep - 1));
-      card.querySelector('#tour-next-btn')?.addEventListener('click', () => showStep(currentStep + 1));
+      card.querySelector('#tour-next-btn')?.addEventListener('click', () => {
+        if (currentStep === total - 1) {
+          endTour();
+          showToast('Обучение завершено! Вы всегда можете запустить его снова в шапке');
+        } else {
+          showStep(currentStep + 1);
+        }
+      });
 
       const el = typeof step.target === 'function' ? step.target() : document.querySelector(step.target);
       if (el) {
@@ -1570,8 +1591,43 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
+    function requestSkip() {
+      isConfirmingSkip = true;
+      card.innerHTML = `
+        <div class="tour-card__top">
+          <span class="tour-card__step-badge" style="color:#f59e0b; background:rgba(245, 158, 11, 0.12); border-color:rgba(245, 158, 11, 0.3);">ВНИМАНИЕ</span>
+        </div>
+        <h3 class="tour-card__title" style="margin-top:6px;">Точно хотите пропустить?</h3>
+        <p class="tour-card__desc" style="line-height:1.55; color:var(--text-secondary); margin-bottom:16px;">
+          ${warningDesc || 'Без прохождения краткого обучения вам будет <strong>сложно ориентироваться</strong> по платформе: как привязывать авторский код, где брать паки исходников, как работает учет просмотров и вывод выплат.'}
+        </p>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <button type="button" class="btn btn--primary btn--sm" id="tour-resume-btn" style="width:100%; justify-content:center;">
+            Продолжить обучение
+          </button>
+          <button type="button" class="btn btn--secondary btn--sm" id="tour-confirm-skip-btn" style="width:100%; justify-content:center; opacity:0.8;">
+            Все равно пропустить
+          </button>
+        </div>
+      `;
+
+      card.querySelector('#tour-resume-btn')?.addEventListener('click', () => {
+        isConfirmingSkip = false;
+        showStep(currentStep);
+      });
+
+      card.querySelector('#tour-confirm-skip-btn')?.addEventListener('click', () => {
+        endTour();
+        showToast('Обучение пропущено. Вы можете пройти его в любое время кнопкой в шапке');
+      });
+    }
+
     function startTour() {
       isRunning = true;
+      isConfirmingSkip = false;
+      backdrop.style.display = '';
+      spotlight.style.display = '';
+      card.style.display = '';
       backdrop.classList.add('is-active');
       spotlight.classList.add('is-active');
       card.classList.add('is-active');
@@ -1584,10 +1640,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function endTour() {
       isRunning = false;
+      isConfirmingSkip = false;
       backdrop.classList.remove('is-active');
       spotlight.classList.remove('is-active');
       card.classList.remove('is-active');
       backdrop.style.clipPath = '';
+      backdrop.style.display = 'none';
+      spotlight.style.display = 'none';
+      card.style.display = 'none';
+
       window.removeEventListener('resize', updatePosition);
       window.removeEventListener('scroll', updatePosition, true);
       document.removeEventListener('keydown', handleKeyDown);
@@ -1600,11 +1661,25 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleKeyDown(e) {
       if (!isRunning) return;
       if (e.key === 'Escape') {
-        endTour();
+        if (isConfirmingSkip) {
+          isConfirmingSkip = false;
+          showStep(currentStep);
+        } else {
+          requestSkip();
+        }
       } else if (e.key === 'ArrowRight' || e.key === 'Enter') {
-        showStep(currentStep + 1);
+        if (!isConfirmingSkip) {
+          if (currentStep === steps.length - 1) {
+            endTour();
+            showToast('Обучение завершено! Вы всегда можете запустить его снова в шапке');
+          } else {
+            showStep(currentStep + 1);
+          }
+        }
       } else if (e.key === 'ArrowLeft') {
-        if (currentStep > 0) showStep(currentStep - 1);
+        if (!isConfirmingSkip && currentStep > 0) {
+          showStep(currentStep - 1);
+        }
       }
     }
 
@@ -1626,6 +1701,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   initOnboardingTour({
     steps: CLIPPER_TOUR_STEPS,
-    storageKey: TOUR_STORAGE_KEY
+    storageKey: TOUR_STORAGE_KEY,
+    warningDesc: 'Без краткого обучения вам будет <strong>сложно ориентироваться</strong> по платформе: как привязывать авторский токен к видео, где брать исходники, как засчитываются просмотры и выводятся выплаты без комиссии.'
   });
 });

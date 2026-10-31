@@ -1826,12 +1826,15 @@ dialog::backdrop {
   -webkit-backdrop-filter: blur(5px);
   background: rgba(5, 5, 8, 0.76);
   opacity: 0;
-  pointer-events: auto;
-  transition: opacity var(--dur-med) var(--ease-out);
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity var(--dur-med) var(--ease-out), visibility var(--dur-med);
 }
 
 .tour-backdrop.is-active {
   opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
 }
 
 .tour-spotlight {
@@ -1842,15 +1845,18 @@ dialog::backdrop {
   box-shadow: 0 0 24px rgba(255, 85, 20, 0.45), inset 0 0 12px rgba(255, 85, 20, 0.12);
   pointer-events: none;
   opacity: 0;
+  visibility: hidden;
   transition: top 0.32s cubic-bezier(0.16, 1, 0.3, 1),
               left 0.32s cubic-bezier(0.16, 1, 0.3, 1),
               width 0.32s cubic-bezier(0.16, 1, 0.3, 1),
               height 0.32s cubic-bezier(0.16, 1, 0.3, 1),
-              opacity 0.2s ease;
+              opacity 0.2s ease,
+              visibility 0.2s;
 }
 
 .tour-spotlight.is-active {
   opacity: 1;
+  visibility: visible;
 }
 
 .tour-card {
@@ -1863,14 +1869,18 @@ dialog::backdrop {
   padding: 20px;
   box-shadow: 0 24px 64px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.05);
   opacity: 0;
-  pointer-events: auto;
+  visibility: hidden;
+  pointer-events: none;
   transition: top 0.32s cubic-bezier(0.16, 1, 0.3, 1),
               left 0.32s cubic-bezier(0.16, 1, 0.3, 1),
-              opacity 0.22s ease;
+              opacity 0.22s ease,
+              visibility 0.22s;
 }
 
 .tour-card.is-active {
   opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
 }
 
 .tour-card__top {
