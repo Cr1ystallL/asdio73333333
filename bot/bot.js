@@ -2,14 +2,11 @@
 // Zero dependencies — works on Node 18+ with native fetch!
 // Run: node bot.js
 
-const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || 'YOUR_BOT_TOKEN_HERE';
-const API_URL = process.env.KONVEER_API_URL || 'https://konveer-clipper.vercel.app';
-
-if (BOT_TOKEN === 'YOUR_BOT_TOKEN_HERE') {
-  console.log('⚠️  Внимание: TELEGRAM_BOT_TOKEN не задан.');
-  console.log('Создайте бота у @BotFather в Telegram и запустите бота:');
-  console.log('TELEGRAM_BOT_TOKEN="123456:ABC-DEF..." node bot/bot.js\n');
-}
+const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '9126995995:AAHDbxNRV6JR5JfdOXbRXmO4k_VKc_76eck';
+const API_ENDPOINTS = (process.env.KONVEER_ENDPOINTS || 'https://konveer-clipper.vercel.app,https://konveer-advertiser.vercel.app')
+  .split(',')
+  .map(s => s.trim())
+  .filter(Boolean);
 
 let offset = 0;
 
@@ -24,21 +21,25 @@ async function tgCall(method, body = {}) {
 }
 
 async function verifyTokenOnPlatform(token, tgUser) {
-  try {
-    const res = await fetch(`${API_URL}/api/telegram-auth`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        action: 'verify_by_bot',
-        token,
-        telegram_user: tgUser
-      })
-    });
-    return await res.json();
-  } catch (err) {
-    console.error('Ошибка связи с платформой Konveer:', err.message);
-    return { ok: false, error: err.message };
+  const results = [];
+  for (const endpoint of API_ENDPOINTS) {
+    try {
+      const res = await fetch(`${endpoint}/api/telegram-auth`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'verify_by_bot',
+          token,
+          telegram_user: tgUser
+        })
+      });
+      const data = await res.json();
+      results.push({ endpoint, data });
+    } catch (err) {
+      results.push({ endpoint, error: err.message });
+    }
   }
+  return results;
 }
 
 async function handleMessage(msg) {

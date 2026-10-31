@@ -38,7 +38,7 @@ module.exports = async function handler(req, res) {
 
   pruneExpiredSessions();
 
-  const botUsername = process.env.TELEGRAM_BOT_USERNAME || 'KonveerAuthBot';
+  const botUsername = process.env.TELEGRAM_BOT_USERNAME || 'Kanveer_bot';
 
   // 1. GET Requests: info or check status
   if (req.method === 'GET') {

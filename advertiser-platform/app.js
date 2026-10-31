@@ -334,7 +334,7 @@ document.addEventListener('DOMContentLoaded', () => {
     currentAdvToken = generateRandomToken();
     pendingAdvAuth = { accountName, companyName, email, phone, country, city, token: currentAdvToken };
 
-    let botUsername = 'KonveerAuthBot';
+    let botUsername = 'Kanveer_bot';
     let botUrl = `https://t.me/${botUsername}?start=${currentAdvToken}`;
 
     try {

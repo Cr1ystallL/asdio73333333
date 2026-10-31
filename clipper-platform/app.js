@@ -347,7 +347,7 @@ document.addEventListener('DOMContentLoaded', () => {
     currentAuthToken = generateRandomToken();
     pendingAuthData = { nickname, email, phone, bank, password, token: currentAuthToken };
 
-    let botUsername = 'KonveerAuthBot';
+    let botUsername = 'Kanveer_bot';
     let botUrl = `https://t.me/${botUsername}?start=${currentAuthToken}`;
 
     try {
@@ -1307,7 +1307,7 @@ document.addEventListener('DOMContentLoaded', () => {
         welcomeTitle.textContent = 'Добро пожаловать в Konveer Studio';
       }
       if (welcomeDesc) {
-        welcomeDesc.innerHTML = 'Пройдите регистрацию и привяжите Telegram через нашего официального бота <strong>@KonveerAuthBot</strong>, чтобы брать офферы заказчиков в работу, получать персональный токен и выводить выплаты по СБП.';
+        welcomeDesc.innerHTML = 'Пройдите регистрацию и привяжите Telegram через нашего официального бота <strong>@Kanveer_bot</strong>, чтобы брать офферы заказчиков в работу, получать персональный токен и выводить выплаты по СБП.';
       }
       if (authCta) {
         authCta.style.display = 'inline-flex';
